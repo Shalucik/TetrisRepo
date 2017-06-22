@@ -1,4 +1,4 @@
-package com.youngcapital.tetris.complete;
+package com.youngcapital.tetris.complete.websocket;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
