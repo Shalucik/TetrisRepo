@@ -18,9 +18,16 @@ public class TetrisController {
 		return "tetris";
 	}
 	
-	@MessageMapping("/control")
-	@SendTo("/app/output")
+	@MessageMapping("/controls")
+	@SendTo("/tetris/output")
 	public ControlGreeting controlgreeting(ControlMessage message){
-		return new ControlGreeting("" + message.getKeyboardCode());
+		switch(message.getKeyboardCode()){
+			case 37:
+			case 38:
+			case 39:
+			case 40:
+				return new ControlGreeting("Correct Input: " + message.getKeyboardCode());
+		}
+		return new ControlGreeting("Wrong Input, You Cheater!: " + message.getKeyboardCode());
 	}
 }
