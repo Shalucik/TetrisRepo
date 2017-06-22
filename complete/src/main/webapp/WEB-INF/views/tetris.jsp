@@ -17,6 +17,7 @@
 </head>
 
 <body>
+${test}
 	<div class="btn-group btn-group" role="group">
 		<button id="connect" class="btn btn-default" type="submit">Connect</button>
 		<button id="disconnect" class="btn btn-default" type="submit"
