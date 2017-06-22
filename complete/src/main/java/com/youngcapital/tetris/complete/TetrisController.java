@@ -16,13 +16,11 @@ public class TetrisController {
 	@Autowired
 	private BlockRepository bRepo;
 	
-	@Autowired
-	private BlockRepository pRepo;
-	
 	@RequestMapping("/tetris")
 	public String createPage(Model model){
 		model.addAttribute("gridWidth", 10);
 		model.addAttribute("gridHeight", 20);
+		model.addAttribute("test", bRepo.findOne(1l));
 		return "tetris";
 	}
 	

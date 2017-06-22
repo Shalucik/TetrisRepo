@@ -13,6 +13,14 @@
 </head>
 
 <body>
+<script>
+var or = JSON.parse('${test.orientations}').orientations[0];
+var text = "";
+for (var i = 0; i < 4; i++) {
+	text += (or[i].x + ${test.currentX}) + " " + (or[i].y + ${test.currentY}) + "<br>";	
+}
+$("body").html(text);
+</script>
 	<table><tbody>
 		<c:forEach var="i" begin="0" end="${gridHeight}">
 			<tr>
