@@ -21,7 +21,7 @@ public class TetrisController {
 	private Point[] currentPositions;
 	
 	@Autowired
-	protected SimpMessagingTemplate template;
+	private SimpMessagingTemplate template;
 	
 	@RequestMapping("/tetris")
 	public String createPage(Model model){
