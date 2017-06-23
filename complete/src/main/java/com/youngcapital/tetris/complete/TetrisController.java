@@ -21,7 +21,7 @@ public class TetrisController {
 	private Point[] currentPositions;
 	
 	@Autowired
-	public SimpMessagingTemplate template;
+	private SimpMessagingTemplate template;
 	
 	@RequestMapping("/tetris")
 	public String createPage(Model model){
@@ -54,7 +54,7 @@ public class TetrisController {
 	}
 	
 	public Point[] createBlock(){
-		return new Point[]{new Point(4,0)};
+		return new Point[]{new Point(3,0)};
 	}
 	
 	@MessageMapping("/move")
