@@ -34,16 +34,18 @@ public class TetrisController {
 	}
 	
 	@MessageMapping("/controls")
-	@SendTo("/tetris/output")
+	@SendTo("/tetris/move")
 	public Greeting controlgreeting(ControlMessage message){
 		switch(message.getKeyboardCode()){
 			case 37:
+				return moveGreeting(new MoveMessage(-1,0));
 			case 38:
 			case 39:
+				return moveGreeting(new MoveMessage(1,0));
 			case 40:
-				return new Greeting("Correct Input: " + message.getKeyboardCode());
+			default:
+				return new Greeting("no change");
 		}
-		return new Greeting("Wrong Input, You Cheater!: " + message.getKeyboardCode());
 	}
 	
 	@MessageMapping("/init")
@@ -65,6 +67,8 @@ public class TetrisController {
 		for(int i = 0; i < oldPositions.length; i++){
 			oldPositions[i] = (Point) currentPositions[i].clone();
 			currentPositions[i].setLocation(currentPositions[i].getX() + message.getX(), currentPositions[i].getY() + message.getY());
+			if(currentPositions[i].getX() < 0 || currentPositions[i].getX() >= grid[0].length || currentPositions[i].getY() < 0)
+				return new Greeting();
 		}
 		
 		

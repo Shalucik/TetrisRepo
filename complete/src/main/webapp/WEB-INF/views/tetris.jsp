@@ -15,7 +15,6 @@
 <body>
 	<button id="connect" class="btn btn-default" type="submit">Connect</button>
 	<button id="disconnect" class="btn btn-default" type="submit" disabled="disabled">Disconnect</button>
-	<button id="test" class="btn btn-default" type="submit" disabled="disabled">test</button>
 	<table><tbody>
 		<c:forEach var="i" begin="0" end="${gridHeight}">
 			<tr>
