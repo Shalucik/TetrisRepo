@@ -54,7 +54,7 @@ public class TetrisController {
 	}
 	
 	public Point[] createBlock(){
-		return new Point[]{new Point(4,0)};
+		return new Point[]{new Point(5,0)};
 	}
 	
 	@MessageMapping("/move")
