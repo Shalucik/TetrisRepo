@@ -63,16 +63,30 @@ public class TetrisController {
 	@SendTo("/tetris/move")
 	public Greeting moveGreeting(MoveMessage message) {
 		Point move = new Point(message.getX(), message.getY());
-		Point[] oldPositions = new Point[currentPositions.length];
-		for(int i = 0; i < oldPositions.length; i++){
-			oldPositions[i] = (Point) currentPositions[i].clone();
-			currentPositions[i].setLocation(currentPositions[i].getX() + message.getX(), currentPositions[i].getY() + message.getY());
-			if(currentPositions[i].getX() < 0 || currentPositions[i].getX() >= grid[0].length || currentPositions[i].getY() < 0)
+		Point[] newPositions = new Point[currentPositions.length];
+		for(int i = 0; i < newPositions.length; i++){
+			newPositions[i] = new Point(currentPositions[i].x + message.getX(), currentPositions[i].y + message.getY());
+			if(newPositions[i].x < 0 || newPositions[i].x >= grid[0].length || (message.getX() != 0 && checkGrid(newPositions[i]))){
 				return new Greeting();
+			}
+			if(newPositions[i].y == grid.length || checkGrid(newPositions[i])){
+				updateGrid();
+				return initGreeting();
+			}
 		}
-		
-		
-		
-		return new Greeting(oldPositions, currentPositions, "red");
+		return new Greeting(currentPositions, currentPositions = newPositions, "red");
+	}
+	
+	public void updateGrid(){
+		for(Point point : currentPositions){
+			grid[point.y][point.x] = true;
+		}
+	}
+	
+	public boolean checkGrid(Point point){
+		if(point.x >= 0 && point.x < grid[0].length && point.y >= 0 && point.y < grid.length){
+			return grid[point.y][point.x];
+		}
+		return false;
 	}
 }
