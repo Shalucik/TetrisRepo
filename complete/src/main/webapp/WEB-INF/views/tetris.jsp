@@ -17,7 +17,14 @@
 </head>
 
 <body>
-${test}
+<script>
+var or = JSON.parse('${block.orientations}').orientations[0];
+var text = "Calculated absolute positions:";
+for (var i = 0; i < 4; i++) {
+	text += (or[i].x + ${block.currentX}) + " " + (or[i].y + ${block.currentY}) + "<br>";	
+}
+$("body").html(text);
+</script>
 	<div class="btn-group btn-group" role="group">
 		<button id="connect" class="btn btn-default" type="submit">Connect</button>
 		<button id="disconnect" class="btn btn-default" type="submit"
