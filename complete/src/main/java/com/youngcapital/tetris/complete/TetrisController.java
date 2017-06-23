@@ -17,7 +17,7 @@ import com.youngcapital.tetris.complete.websocket.MoveMessage;
 @Controller
 public class TetrisController {
 	
-	private boolean[][] grid;
+	protected boolean[][] grid;
 	private Point[] currentPositions;
 	
 	@Autowired
