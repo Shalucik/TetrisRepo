@@ -17,7 +17,7 @@ import com.youngcapital.tetris.complete.websocket.Greeting;
 public class TetrisController {
 	
 	@Autowired
-	private SimpMessagingTemplate template;
+	protected SimpMessagingTemplate template;
 	
 	@RequestMapping("/tetris")
 	public String createPage(Model model){
