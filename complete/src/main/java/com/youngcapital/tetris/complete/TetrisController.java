@@ -1,33 +1,51 @@
 package com.youngcapital.tetris.complete;
 
+import java.awt.Point;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.youngcapital.tetris.complete.websocket.*;
+import com.youngcapital.tetris.complete.websocket.ControlMessage;
+import com.youngcapital.tetris.complete.websocket.Greeting;
 
 @Controller
 public class TetrisController {
 	
+	@Autowired
+	private SimpMessagingTemplate template;
+	
 	@RequestMapping("/tetris")
 	public String createPage(Model model){
-		model.addAttribute("gridWidth", 10);
-		model.addAttribute("gridHeight", 20);
+		model.addAttribute("gridHeight", 19);
+		model.addAttribute("gridWidth", 9);
 		return "tetris";
 	}
 	
 	@MessageMapping("/controls")
 	@SendTo("/tetris/output")
-	public ControlGreeting controlgreeting(ControlMessage message){
+	public Greeting controlgreeting(ControlMessage message){
 		switch(message.getKeyboardCode()){
 			case 37:
 			case 38:
 			case 39:
 			case 40:
-				return new ControlGreeting("Correct Input: " + message.getKeyboardCode());
+				return new Greeting("Correct Input: " + message.getKeyboardCode());
 		}
-		return new ControlGreeting("Wrong Input, You Cheater!: " + message.getKeyboardCode());
+		return new Greeting("Wrong Input, You Cheater!: " + message.getKeyboardCode());
+	}
+	
+	@MessageMapping("/init")	
+	public void initGreeting() {
+		test();
+		//return new Greeting(new Point[]{}, new Point[]{new Point(4,0)}, "red");
+	}
+	
+	public void test(){
+		template.convertAndSend("/tetris/init", new Greeting(new Point[]{}, new Point[]{new Point(4,0)}, "red"));
 	}
 }

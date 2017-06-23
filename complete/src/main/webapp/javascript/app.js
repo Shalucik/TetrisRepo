@@ -12,9 +12,19 @@ function connect() {
 	stompClient.connect({}, function(frame) {
 		setConnected(true);
 		console.log('Connected: ' + frame);
+		stompClient.subscribe('/tetris/init', function(greeting){
+			var greet = JSON.parse(greeting.body);
+			$.each(greet.grayPositions, function(key, value){
+				$("#" + value.x + value.y).css('background', 'gray');
+			});
+			$.each(greet.colorPositions, function(key, value){				
+				$("#" + value.x + value.y).css('background', greet.color);
+			})
+		});
 		stompClient.subscribe('/tetris/output', function (greeting) {
 			alert(JSON.parse(greeting.body).content);
 		});
+		stompClient.send("/app/init", {}, "");
 	});
 }
 
@@ -31,9 +41,14 @@ function test(keyCode) {
 		stompClient.send("/app/controls", {}, JSON.stringify({'keyboardCode': keyCode}));
 }
 
+function init(){
+	connect();
+}
+
 $(function(){
 	$("#connect").click(function() {connect();});
 	$("#disconnect").click(function() {disconnect();});
 	$("#test").click(function() {test(1);});
 	$(document).keydown(function(event) {test(event.which);});
+	init();
 })

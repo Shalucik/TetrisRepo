@@ -1,6 +1,6 @@
 package com.youngcapital.tetris.complete.websocket;
 
-public class ControlMessage {
+public class ControlMessage extends Message{
 	
 	private int keyboardCode;
 	
