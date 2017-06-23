@@ -54,11 +54,7 @@ public class TetrisController {
 	}
 	
 	public Point[] createBlock(){
-<<<<<<< .merge_file_a07964
 		return new Point[]{new Point(5,0)};
-=======
-		return new Point[]{new Point(3,0)};
->>>>>>> .merge_file_a08892
 	}
 	
 	@MessageMapping("/move")
