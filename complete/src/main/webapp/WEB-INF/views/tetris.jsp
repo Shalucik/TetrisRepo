@@ -17,32 +17,16 @@
 </head>
 
 <body>
-<script>
-var or = JSON.parse('${block.orientations}').orientations[0];
-var text = "Calculated absolute positions:";
-for (var i = 0; i < 4; i++) {
-	text += (or[i].x + ${block.currentX}) + " " + (or[i].y + ${block.currentY}) + "<br>";	
-}
-$("body").html(text);
-</script>
-	<div class="btn-group btn-group" role="group">
-		<button id="connect" class="btn btn-default" type="submit">Connect</button>
-		<button id="disconnect" class="btn btn-default" type="submit"
-			disabled="disabled">Disconnect</button>
-		<button id="test" class="btn btn-default" type="submit"
-			disabled="disabled">test</button>
-	</div>
-	<table>
-		<tbody>
-			<c:forEach var="i" begin="0" end="${gridHeight}">
-				<tr>
-					<c:forEach var="j" begin="0" end="${gridWidth}">
-						<td id="${j}${i}"></td>
-					</c:forEach>
-				</tr>
-			</c:forEach>
-		</tbody>
-	</table>
-
+	<button id="connect" class="btn btn-default" type="submit">Connect</button>
+	<button id="disconnect" class="btn btn-default" type="submit" disabled="disabled">Disconnect</button>
+	<table><tbody>
+		<c:forEach var="i" begin="0" end="${gridHeight}">
+			<tr>
+				<c:forEach var="j" begin="0" end="${gridWidth}">
+					<td id="${j}${i}"></td>
+				</c:forEach>
+			</tr>
+		</c:forEach>
+	</tbody></table>
 </body>
 </html>
