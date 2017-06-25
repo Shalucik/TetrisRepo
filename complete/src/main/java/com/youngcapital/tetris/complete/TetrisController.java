@@ -71,6 +71,39 @@ public class TetrisController {
 	}
 	
 	public Point[] createBlock(){
+		currentBlock = getRandomBlock();
+		return getBlockPoints(currentBlock);		
+	}
+	
+	private Point[] getBlockPoints(Block block) {
+		Point[] points = new Point[4];
+		Orientation[] ors = new Orientation[4];
+		int orientation = block.getCurrentOrientation();
+		
+		int offX = block.getCurrentPos().getX();
+		int offY = block.getCurrentPos().getY();
+		
+		ors[0] = block.getOrientation0();
+		ors[1] = block.getOrientation1();
+		ors[2] = block.getOrientation2();
+		ors[3] = block.getOrientation3();
+		
+		points[0] = new Point(ors[orientation].getPosition0().getX() + offX,
+								ors[orientation].getPosition0().getY() + offY);
+		
+		points[1] = new Point(ors[orientation].getPosition1().getX() + offX,
+				ors[orientation].getPosition1().getY() + offY);
+		
+		points[2] = new Point(ors[orientation].getPosition2().getX() + offX,
+				ors[orientation].getPosition2().getY() + offY);
+		
+		points[3] = new Point(ors[orientation].getPosition3().getX() + offX,
+				ors[orientation].getPosition3().getY() + offY);
+		
+		return points;
+	}
+	
+	private Block getRandomBlock() {
 		List<Block> list = null;
 		int blockNum = (int)(Math.random() * 7);
 		switch(blockNum) {
@@ -90,32 +123,14 @@ public class TetrisController {
 			list = bRepo.findByBlockType("L"); break;
 		}
 		
-		currentBlock = list.get(0);
-		Point[] points = new Point[4];
-		Orientation[] ors = new Orientation[4];
-		int randomOrientation = (int)(Math.random() * 4);
-		
-		int offX = currentBlock.getCurrentPos().getX();
-		int offY = currentBlock.getCurrentPos().getY();
-		
-		ors[0] = currentBlock.getOrientation0();
-		ors[1] = currentBlock.getOrientation1();
-		ors[2] = currentBlock.getOrientation2();
-		ors[3] = currentBlock.getOrientation3();
-		
-		points[0] = new Point(ors[randomOrientation].getPosition0().getX() + offX,
-								ors[randomOrientation].getPosition0().getY() + offY);
-		
-		points[1] = new Point(ors[randomOrientation].getPosition1().getX() + offX,
-				ors[randomOrientation].getPosition1().getY() + offY);
-		
-		points[2] = new Point(ors[randomOrientation].getPosition2().getX() + offX,
-				ors[randomOrientation].getPosition2().getY() + offY);
-		
-		points[3] = new Point(ors[randomOrientation].getPosition3().getX() + offX,
-				ors[randomOrientation].getPosition3().getY() + offY);
-		
-		return points; 
+		if (list == null) {
+			return null;
+		} else
+		{
+			Block block = list.get(0);
+			block.setCurrentOrientation((int)(Math.random() * 4));
+			return block;
+		}
 	}
 	
 	@MessageMapping("/move")
