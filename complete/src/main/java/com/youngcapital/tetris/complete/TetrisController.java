@@ -80,7 +80,7 @@ public class TetrisController {
 		Point[] newPositions = new Point[currentPositions.length];
 		for(int i = 0; i < newPositions.length; i++){
 			newPositions[i] = new Point(currentPositions[i].x + message.getX(), currentPositions[i].y + message.getY());
-			if(newPositions[i].x < 0 || newPositions[i].x >= grid[0].length || (message.getX() != 0 && checkGrid(newPositions[i]))){
+			if((message.getX() != 0 && checkGrid(newPositions[i]))){
 				return new Greeting();
 			}
 			if(newPositions[i].y == grid.length || checkGrid(newPositions[i])){
@@ -99,9 +99,10 @@ public class TetrisController {
 	
 	public boolean checkGrid(Point point){
 		if(point.x >= 0 && point.x < grid[0].length && point.y >= 0 && point.y < grid.length){
+			System.out.println(point.x);
 			return grid[point.y][point.x];
 		}
-		return false;
+		return true;
 	}
 	
 	@RequestMapping(value="/getblock/{blockType}")
