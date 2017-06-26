@@ -21,7 +21,6 @@ function connect() {
 		stompClient.subscribe('/tetris/move', function(greeting){
 			updateBlock(greeting);
 		})
-		stompClient.send("/app/init", {}, "");
 		loop();
 	});
 }

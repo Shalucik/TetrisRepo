@@ -7,20 +7,17 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-//<<<<<<< HEAD
 import com.youngcapital.tetris.complete.block.Block;
 import com.youngcapital.tetris.complete.block.BlockRepository;
 import com.youngcapital.tetris.complete.block.Orientation;
 import com.youngcapital.tetris.complete.block.Pos;
-import com.youngcapital.tetris.complete.websocket.ControlMessage;
-
+import com.youngcapital.tetris.complete.block.TetrisBlock;
 import com.youngcapital.tetris.complete.websocket.ControlMessage;
 import com.youngcapital.tetris.complete.websocket.Greeting;
 import com.youngcapital.tetris.complete.websocket.MoveMessage;
@@ -29,22 +26,21 @@ import com.youngcapital.tetris.complete.websocket.MoveMessage;
 public class TetrisController {
 	
 	private boolean[][] grid;
-	private Point[] currentPositions;
-	private Block currentBlock;
-	
-	@Autowired
-	private SimpMessagingTemplate template;
+	private TetrisBlock currentBlock;
+	private int gridHeight;
+	private int gridWidth;
 	
 	@Autowired
 	private BlockRepository bRepo;
 	
 	@RequestMapping("/tetris")
 	public String createPage(Model model){
-		int gridHeight = 20;
-		int gridWidth = 10;
+		gridHeight = 20;
+		gridWidth = 10;
 		grid = new boolean[gridHeight][gridWidth];
 		model.addAttribute("gridHeight", gridHeight-1);
 		model.addAttribute("gridWidth", gridWidth-1);
+		currentBlock = null;
 		return "tetris";
 	}
 
@@ -63,44 +59,43 @@ public class TetrisController {
 		}
 	}
 	
-	@MessageMapping("/init")
-	@SendTo("/tetris/init")
-	public Greeting initGreeting() {
-		currentPositions = createBlock();
-		return new Greeting(new Point[]{}, currentPositions, currentBlock.getColor());
+	public TetrisBlock createBlock(){
+		Block block = getRandomBlock();
+		
+		Point curPos = getPoint(block.getCurrentPos());
+		
+		Point[][] oris = new Point[4][];
+		oris[0] = getOrientation(block.getOrientation0());
+		oris[1] = getOrientation(block.getOrientation1());
+		oris[2] = getOrientation(block.getOrientation2());
+		oris[3] = getOrientation(block.getOrientation3());
+		
+		return new TetrisBlock(curPos, oris, 0, addPointToArray(curPos, oris[0]), block.getColor());
 	}
 	
-	public Point[] createBlock(){
-		currentBlock = getRandomBlock();
-		return getBlockPoints(currentBlock);		
+	private Point[] addPointToArray(Point point, Point[] array){
+		Point[] curPos = new Point[array.length];
+		for(int i = 0; i < curPos.length; i++){
+			curPos[i] = addPointToPoint(point, array[i]);
+		}
+		return curPos;
 	}
 	
-	private Point[] getBlockPoints(Block block) {
-		Point[] points = new Point[4];
-		Orientation[] ors = new Orientation[4];
-		int orientation = block.getCurrentOrientation();
-		
-		int offX = block.getCurrentPos().getX();
-		int offY = block.getCurrentPos().getY();
-		
-		ors[0] = block.getOrientation0();
-		ors[1] = block.getOrientation1();
-		ors[2] = block.getOrientation2();
-		ors[3] = block.getOrientation3();
-		
-		points[0] = new Point(ors[orientation].getPosition0().getX() + offX,
-								ors[orientation].getPosition0().getY() + offY);
-		
-		points[1] = new Point(ors[orientation].getPosition1().getX() + offX,
-				ors[orientation].getPosition1().getY() + offY);
-		
-		points[2] = new Point(ors[orientation].getPosition2().getX() + offX,
-				ors[orientation].getPosition2().getY() + offY);
-		
-		points[3] = new Point(ors[orientation].getPosition3().getX() + offX,
-				ors[orientation].getPosition3().getY() + offY);
-		
-		return points;
+	private Point addPointToPoint(Point p, Point q){
+		return new Point(p.x + q.x, p.y + q.y);
+	}
+	
+	public Point[] getOrientation(Orientation ori){
+		Point[] oris = new Point[4];
+		oris[0] = getPoint(ori.getPosition0());
+		oris[1] = getPoint(ori.getPosition1());
+		oris[2] = getPoint(ori.getPosition2());
+		oris[3] = getPoint(ori.getPosition3());
+		return oris;
+	}
+	
+	public Point getPoint(Pos position){
+		return new Point(position.getX(), position.getY());
 	}
 	
 	private Block getRandomBlock() {
@@ -123,50 +118,49 @@ public class TetrisController {
 			list = bRepo.findByBlockType("L"); break;
 		}
 		
-		if (list == null) {
-			return null;
-		} else
-		{
-			Block block = list.get(0);
-			block.setCurrentOrientation((int)(Math.random() * 4));
-			return block;
-		}
+		return list == null ? null : list.get(0);
 	}
 	
 	@MessageMapping("/move")
 	@SendTo("/tetris/move")
 	public Greeting moveGreeting(MoveMessage message) {
-		if (currentPositions == null) {
-			return new Greeting();
+		if (currentBlock == null) {
+			currentBlock = createBlock();
+			return new Greeting("there was no block", new Point[]{}, currentBlock.getCurrentPositions(), currentBlock.getColor());
 		}
 		
 		Point move = new Point(message.getX(), message.getY());
-		Point[] newPositions = new Point[currentPositions.length];
+		
+		Point[] currentPositions = currentBlock.getCurrentPositions();
+		Point[] newPositions = addPointToArray(move, currentPositions);
 		for(int i = 0; i < newPositions.length; i++){
-			newPositions[i] = new Point(currentPositions[i].x + message.getX(), currentPositions[i].y + message.getY());
 			if((message.getX() != 0 && checkGrid(newPositions[i]))){
-				return new Greeting();
+				return new Greeting("can't move");
 			}
 			if(newPositions[i].y == grid.length || checkGrid(newPositions[i])){
-				updateGrid();
-				return initGreeting();
+				updateGrid(currentPositions);
+				currentBlock = createBlock();
+				return new Greeting("new block", new Point[]{}, currentBlock.getCurrentPositions(), currentBlock.getColor());
 			}
 		}
-		return new Greeting(currentPositions, currentPositions = newPositions, currentBlock.getColor());
+		currentBlock.setCurrentPosition(addPointToPoint(currentBlock.getCurrentPosition(), move));
+		currentBlock.setCurrentPositions(newPositions);
+		return new Greeting("continue", currentPositions, newPositions, currentBlock.getColor());
 	}
 	
-	public void updateGrid(){
-		for (int i = 0; i < currentPositions.length; i++) {
-			int x = (int)currentPositions[i].getX();
-			int y = (int)currentPositions[i].getY();
-			if (x >= 0 && x < grid[0].length && y >= 0 && y < grid.length) {
+	
+	public void updateGrid(Point[] positions){
+		for (int i = 0; i < positions.length; i++) {
+			int x = positions[i].x;
+			int y = positions[i].y;
+			if (x >= 0 && x < gridWidth && y >= 0 && y < gridHeight) {
 				grid[y][x] = true;
 			}
 		}
 	}
 	
 	public boolean checkGrid(Point point){
-		if(point.x >= 0 && point.x < grid[0].length && point.y >= 0 && point.y < grid.length){
+		if(point.x >= 0 && point.x < gridWidth && point.y >= 0 && point.y < gridHeight){
 			return grid[point.y][point.x];
 		}
 		return true;
@@ -228,7 +222,6 @@ public class TetrisController {
 		block.setOrientation2(new Orientation(new Pos(0, 0), new Pos(1, 0), new Pos(2, 0), new Pos(3, 0)));
 		block.setOrientation3(new Orientation(new Pos(1, 0), new Pos(1, 1), new Pos(1, 2), new Pos(1, 3)));
 		block.setColor("rgb(100, 149, 237)");
-		block.setCurrentOrientation(0);
 		block.setCurrentPos(new Pos(3, 0));
 		block.setBlockType("Line");
 
@@ -241,7 +234,6 @@ public class TetrisController {
 		square.setOrientation2(new Orientation(new Pos(0, 0), new Pos(1, 0), new Pos(0, 1), new Pos(1, 1)));
 		square.setOrientation3(new Orientation(new Pos(0, 0), new Pos(1, 0), new Pos(0, 1), new Pos(1, 1)));
 		square.setColor("rgb(0, 0, 255)");
-		square.setCurrentOrientation(0);
 		square.setCurrentPos(new Pos(4, 0));
 		square.setBlockType("Square");
 
@@ -254,7 +246,6 @@ public class TetrisController {
 		s.setOrientation2(new Orientation(new Pos(0, 0), new Pos(1, 0), new Pos(0, 1), new Pos(-1, 1)));
 		s.setOrientation3(new Orientation(new Pos(-1, 1), new Pos(-1, 0), new Pos(0, 1), new Pos(0, 2)));
 		s.setColor("rgb(0, 255, 0)");
-		s.setCurrentOrientation(0);
 		s.setCurrentPos(new Pos(5, 0));
 		s.setBlockType("S");
 
@@ -267,7 +258,6 @@ public class TetrisController {
 		z.setOrientation2(new Orientation(new Pos(0, 0), new Pos(-1, 0), new Pos(0, 1), new Pos(1, 1)));
 		z.setOrientation3(new Orientation(new Pos(0, 0), new Pos(0, 1), new Pos(-1, 1), new Pos(-1, 2)));
 		z.setColor("rgb(255, 0, 0)");
-		z.setCurrentOrientation(0);
 		z.setCurrentPos(new Pos(4, 0));
 		z.setBlockType("Z");
 
@@ -280,7 +270,6 @@ public class TetrisController {
 		t.setOrientation2(new Orientation(new Pos(-1, -1), new Pos(0, -1), new Pos(1, -1), new Pos(0, 0)));
 		t.setOrientation3(new Orientation(new Pos(0, -1), new Pos(0, 0), new Pos(-1, 0), new Pos(0, 1)));
 		t.setColor("rgb(255, 165, 0)");
-		t.setCurrentOrientation(0);
 		t.setCurrentPos(new Pos(4, 1));
 		t.setBlockType("T");
 
@@ -293,7 +282,6 @@ public class TetrisController {
 		j.setOrientation2(new Orientation(new Pos(-1, 0), new Pos(-1, -1), new Pos(0, -1), new Pos(-1, 1)));
 		j.setOrientation3(new Orientation(new Pos(-1, -1), new Pos(0, -1), new Pos(1, -1), new Pos(1, 0)));
 		j.setColor("rgb(255, 215, 0)");
-		j.setCurrentOrientation(0);
 		j.setCurrentPos(new Pos(5, 1));
 		j.setBlockType("J");
 
@@ -306,7 +294,6 @@ public class TetrisController {
 		l.setOrientation2(new Orientation(new Pos(-1, -1), new Pos(0, -1), new Pos(0, 0), new Pos(0, 1)));
 		l.setOrientation3(new Orientation(new Pos(-1, 0), new Pos(0, 0), new Pos(1, 0), new Pos(1, -1)));
 		l.setColor("rgb(148, 0, 211)");
-		l.setCurrentOrientation(0);
 		l.setCurrentPos(new Pos(4, 1));
 		l.setBlockType("L");
 
