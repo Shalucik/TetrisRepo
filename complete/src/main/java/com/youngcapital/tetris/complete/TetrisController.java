@@ -51,12 +51,27 @@ public class TetrisController {
 			case 37:
 				return moveGreeting(new MoveMessage(-1,0));
 			case 38:
+				return rotationGreeting();
 			case 39:
 				return moveGreeting(new MoveMessage(1,0));
 			case 40:
 			default:
 				return new Greeting("no change");
 		}
+	}
+	
+	private Greeting rotationGreeting(){
+		int rotation = currentBlock.getCurrentOrientation() + 1;
+		int max = currentBlock.getOrientations().length;
+		if(rotation < 0)
+			rotation = max-1;
+		else if(rotation >= max)
+			rotation = 0;
+		Point[] curPos = currentBlock.getCurrentPositions();
+		Point[] newPos = addPointToArray(currentBlock.getCurrentPosition(), currentBlock.getOrientations()[rotation]);
+		currentBlock.setCurrentOrientation(rotation);
+		currentBlock.setCurrentPositions(newPos);
+		return new Greeting("rotating", curPos, newPos, currentBlock.getColor());
 	}
 	
 	public TetrisBlock createBlock(){
