@@ -69,6 +69,10 @@ public class TetrisController {
 			rotation = 0;
 		Point[] curPos = currentBlock.getCurrentPositions();
 		Point[] newPos = addPointToArray(currentBlock.getCurrentPosition(), currentBlock.getOrientations()[rotation]);
+		for(Point pos : newPos){
+			if(checkGrid(pos))
+				return new Greeting("can't rotate");
+		}
 		currentBlock.setCurrentOrientation(rotation);
 		currentBlock.setCurrentPositions(newPos);
 		return new Greeting("rotating", curPos, newPos, currentBlock.getColor());
