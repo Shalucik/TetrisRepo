@@ -136,6 +136,10 @@ public class TetrisController {
 	@MessageMapping("/move")
 	@SendTo("/tetris/move")
 	public Greeting moveGreeting(MoveMessage message) {
+		if (currentPositions == null) {
+			return new Greeting();
+		}
+		
 		Point move = new Point(message.getX(), message.getY());
 		Point[] newPositions = new Point[currentPositions.length];
 		for(int i = 0; i < newPositions.length; i++){
@@ -258,10 +262,10 @@ public class TetrisController {
 
 		// Z
 		Block z = new Block();
-		z.setOrientation0(new Orientation(new Pos(0, 0), new Pos(1, 0), new Pos(0, 1), new Pos(-1, 1)));
-		z.setOrientation1(new Orientation(new Pos(-1, 1), new Pos(-1, 0), new Pos(0, 1), new Pos(0, 2)));
-		z.setOrientation2(new Orientation(new Pos(0, 0), new Pos(1, 0), new Pos(0, 1), new Pos(-1, 1)));
-		z.setOrientation3(new Orientation(new Pos(-1, 1), new Pos(-1, 0), new Pos(0, 1), new Pos(0, 2)));
+		z.setOrientation0(new Orientation(new Pos(0, 0), new Pos(-1, 0), new Pos(0, 1), new Pos(1, 1)));
+		z.setOrientation1(new Orientation(new Pos(0, 0), new Pos(0, 1), new Pos(-1, 1), new Pos(-1, 2)));
+		z.setOrientation2(new Orientation(new Pos(0, 0), new Pos(-1, 0), new Pos(0, 1), new Pos(1, 1)));
+		z.setOrientation3(new Orientation(new Pos(0, 0), new Pos(0, 1), new Pos(-1, 1), new Pos(-1, 2)));
 		z.setColor("rgb(255, 0, 0)");
 		z.setCurrentOrientation(0);
 		z.setCurrentPos(new Pos(4, 0));
