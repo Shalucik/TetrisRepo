@@ -3,7 +3,16 @@ package com.youngcapital.tetris.complete.websocket;
 public class MoveMessage extends Message {
 		private int x;
 		private int y;
+		private boolean move;
 		
+		public boolean isMove() {
+			return move;
+		}
+
+		public void setMove(boolean move) {
+			this.move = move;
+		}
+
 		public MoveMessage() {}
 
 		public MoveMessage(int x, int y) {

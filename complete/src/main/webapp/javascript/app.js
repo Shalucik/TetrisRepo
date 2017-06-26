@@ -40,18 +40,30 @@ function init(){
 
 function updateBlock(greeting){
 	var update = JSON.parse(greeting.body);
-	$.each(update.grayPositions, function(key, value){
-		$("#" + value.x + value.y).css('background', 'gray');
-	});
-	$.each(update.colorPositions, function(key, value){
-		$("#" + value.x + value.y).css('background', update.color);
-	});
+		if (update.color != "gray") {
+		$.each(update.grayPositions, function(key, value){
+			$("#" + value.x + value.y).css('background', 'gray');
+		});
+		$.each(update.colorPositions, function(key, value){
+			$("#" + value.x + value.y).css('background', update.color);
+		});
+	} else {
+		$.each(update.grayPositions, function(key, value) {
+			for (var j = value.y; j >= 0; j--) {
+				for (var i = 0; i < 10; i++) {
+					$("#" + i + j).css('background', 
+					$("#" + i + (j - update.grayPositions.length)).css('background-color')		
+					);
+				}	
+			}
+		});
+	}
 }
 
 function loop(){
 	var interval = setInterval(function(){
 		stompClient.send("/app/move", {}, JSON.stringify({'x' : 0, 'y' : 1}));
-	},50);
+	},100);
 }
 
 function keyInput(keycode) {

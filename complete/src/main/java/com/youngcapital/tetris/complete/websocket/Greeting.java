@@ -2,10 +2,12 @@ package com.youngcapital.tetris.complete.websocket;
 
 import java.awt.Point;
 
+import com.youngcapital.tetris.complete.block.Pos;
+
 public class Greeting {
 	private String content;
-	private Point[] grayPositions;
-	private Point[] colorPositions;
+	private Pos[] grayPositions;
+	private Pos[] colorPositions;
 	private String color;
 	
 	public Greeting() {}
@@ -14,14 +16,14 @@ public class Greeting {
 		this.content = content;
 	}
 
-	public Greeting(Point[] grayPositions, Point[] colorPositions, String color) {
+	public Greeting(Pos[] grayPositions, Pos[] colorPositions, String color) {
 		this("no comment");
 		this.grayPositions = grayPositions;
 		this.colorPositions = colorPositions;
 		this.color = color;
 	}
 
-	public Greeting(String content, Point[] grayPositions, Point[] colorPositions, String color) {
+	public Greeting(String content, Pos[] grayPositions, Pos[] colorPositions, String color) {
 		this.content = content;
 		this.grayPositions = grayPositions;
 		this.colorPositions = colorPositions;
@@ -32,11 +34,11 @@ public class Greeting {
 		return content;
 	}
 
-	public Point[] getGrayPositions() {
+	public Pos[] getGrayPositions() {
 		return grayPositions;
 	}
 
-	public Point[] getColorPositions() {
+	public Pos[] getColorPositions() {
 		return colorPositions;
 	}
 
