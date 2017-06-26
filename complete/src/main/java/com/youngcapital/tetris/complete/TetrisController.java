@@ -45,8 +45,8 @@ public class TetrisController {
 	}
 
 	@MessageMapping("/controls")
-	@SendTo("/tetris/move")
-	public Greeting controlgreeting(ControlMessage message){
+	@SendTo("/tetris/output")
+	public synchronized Greeting controlgreeting(ControlMessage message){
 		switch(message.getKeyboardCode()){
 			case 37:
 				return moveGreeting(new MoveMessage(-1,0));

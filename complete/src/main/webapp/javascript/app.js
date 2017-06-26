@@ -1,4 +1,5 @@
 var stompClient = null;
+var control = true; 
 
 function setConnected(connected) {
 	$("#connect").prop("disabled", connected);
@@ -12,11 +13,9 @@ function connect() {
 	stompClient.connect({}, function(frame) {
 		setConnected(true);
 		console.log('Connected: ' + frame);
-		stompClient.subscribe('/tetris/init', function(greeting){
-			updateBlock(greeting);
-		});
 		stompClient.subscribe('/tetris/output', function (greeting) {
-			alert(JSON.parse(greeting.body).content);
+			updateBlock(greeting);
+			control = true;
 		});
 		stompClient.subscribe('/tetris/move', function(greeting){
 			updateBlock(greeting);
@@ -54,7 +53,8 @@ function loop(){
 }
 
 function keyInput(keycode) {
-		if(keycode >= 37 && keycode <= 40){
+		if(keycode >= 37 && keycode <= 40 && control){
+			control = false;
 			stompClient.send("/app/controls", {}, JSON.stringify({'keyboardCode': keycode}));
 		}
 }
