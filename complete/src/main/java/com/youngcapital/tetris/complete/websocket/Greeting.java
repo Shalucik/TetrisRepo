@@ -6,8 +6,8 @@ import com.youngcapital.tetris.complete.block.Pos;
 
 public class Greeting {
 	private String content;
-	private Pos[] grayPositions;
-	private Pos[] colorPositions;
+	private Point[] grayPositions;
+	private Point[] colorPositions;
 	private String color;
 	
 	public Greeting() {}
@@ -16,17 +16,17 @@ public class Greeting {
 		this.content = content;
 	}
 
-	public Greeting(Pos[] grayPositions, Pos[] colorPositions, String color) {
+	public Greeting(Point[] grayPositions, Point[] colorPositions, String color) {
 		this("no comment");
 		this.grayPositions = grayPositions;
 		this.colorPositions = colorPositions;
 		this.color = color;
 	}
 
-	public Greeting(String content, Pos[] grayPositions, Pos[] colorPositions, String color) {
+	public Greeting(String content, Point[] curPos, Point[] newPos, String color) {
 		this.content = content;
-		this.grayPositions = grayPositions;
-		this.colorPositions = colorPositions;
+		this.grayPositions = curPos;
+		this.colorPositions = newPos;
 		this.color = color;
 	}
 
@@ -34,11 +34,11 @@ public class Greeting {
 		return content;
 	}
 
-	public Pos[] getGrayPositions() {
+	public Point[] getGrayPositions() {
 		return grayPositions;
 	}
 
-	public Pos[] getColorPositions() {
+	public Point[] getColorPositions() {
 		return colorPositions;
 	}
 
