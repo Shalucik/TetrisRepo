@@ -64,7 +64,7 @@ public class TetrisMaster {
 			int x = positions[i].x;
 			int y = positions[i].y;
 			if (x >= 0 && x < gridWidth && y >= 0 && y < gridHeight) {
-				grid[y][x] = true;
+				grid[y][x] = true;				
 				if(checkLine(y)){
 					if (!lines.contains(y)) {
 						lines.add(y);
@@ -140,8 +140,12 @@ public class TetrisMaster {
 			if(newPositions[i].y == grid.length || checkGrid(newPositions[i])){
 				int[] lines = updateGrid(currentPositions);
 				
+				currentBlock = null;
+				
 				if (lines.length > 0) {
+					
 					updateGridAfterLineRemoval(lines);
+					
 					return new LineGreeting("clearLines", lines);
 				}
 				
