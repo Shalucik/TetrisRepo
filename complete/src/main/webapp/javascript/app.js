@@ -16,14 +16,20 @@ function connect() {
 		console.log('Connected: ' + frame);
 		stompClient.subscribe('/tetris/output', function (greeting) {
 			while(!move){}
-			updateBlock(greeting);
-			control = true;
-			move = true;
+			var update = JSON.parse(greeting.body);
+			if(update.status == 0){
+				updateBlock(update);
+				control = true;
+				move = true;
+			}
 		});
 		stompClient.subscribe('/tetris/move', function(greeting){
 			while(!move){}
-			updateBlock(greeting);
-			move = true;
+			var update = JSON.parse(greeting.body);
+			if(update.status == 0) {
+				updateBlock(update);
+				move = true;
+			}
 		})
 		loop();
 	});
@@ -43,25 +49,24 @@ function init(){
 
 function updateBlock(greeting){
 	move = false;
-	var update = JSON.parse(greeting.body);
-		if (update.content != "clearLines") {
-		$.each(update.grayPositions, function(key, value){
+	if (greeting.content != "clearLines") {
+		$.each(greeting.grayPositions, function(key, value){
 			$("#" + value.x + value.y).css('background', 'gray');
 		});
-		$.each(update.colorPositions, function(key, value){
-			$("#" + value.x + value.y).css('background', update.color);
+		$.each(greeting.colorPositions, function(key, value){
+			$("#" + value.x + value.y).css('background', greeting.color);
 		});
 	} else {
-		$.each(update.grayPositions, function(key, value) {
+		$.each(greeting.grayPositions, function(key, value) {
 			for (var j = value.y; j >= 0; j--) {
 				for (var i = 0; i < 10; i++) {
 					$("#" + i + j).css('background', 
-							$("#" + i + (j - update.grayPositions.length)).css('background-color')
-					);
-				}	
+						$("#" + i + (j - greeting.grayPositions.length)).css('background-color'));
+				}
 			}
 		});
 	}
+	
 }
 
 function loop(){
