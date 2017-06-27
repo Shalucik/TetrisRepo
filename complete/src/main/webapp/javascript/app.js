@@ -107,7 +107,7 @@ function loop() {
 			'x' : 0,
 			'y' : 1
 		}));
-	}, 100);
+	}, 1000);
 }
 
 function keyInput(keycode) {
