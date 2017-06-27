@@ -3,19 +3,19 @@ package com.youngcapital.tetris.complete.websocket;
 public abstract class Greeting {
 	
 	private String content;
-	private boolean line;
+	private int status;
 
-	public Greeting(String content, boolean line) {
+	public Greeting(String content, int status) {
 		this.content = content;
-		this.line = line;
+		this.status = status;
 	}
 
 	public String getContent() {
 		return content;
 	}
 
-	public boolean isLine() {
-		return line;
+	public int getStatus() {
+		return status;
 	}
 
 }

@@ -9,7 +9,7 @@ public class MoveGreeting extends Greeting{
 	
 
 	public MoveGreeting(String content) {
-		super(content, false);
+		super(content, 0);
 	}
 
 	public MoveGreeting(Point[] grayPositions, Point[] colorPositions, String color) {

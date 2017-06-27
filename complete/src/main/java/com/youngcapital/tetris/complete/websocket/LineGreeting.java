@@ -5,7 +5,7 @@ public class LineGreeting extends Greeting {
 	private int[] lines;
 
 	public LineGreeting(String content) {
-		super(content, true);
+		super(content, 1);
 	}
 
 	public LineGreeting(int[] lines) {
