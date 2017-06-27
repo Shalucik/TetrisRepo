@@ -14,14 +14,16 @@ function connect() {
 	stompClient.connect({}, function(frame) {
 		setConnected(true);
 		console.log('Connected: ' + frame);
-		stompClient.subscribe('/tetris/output', function (greeting) {
-			while(!move){}
+		stompClient.subscribe('/tetris/output', function(greeting) {
+			while (!move) {
+			}
 			updateBlock(greeting);
 			control = true;
 			move = true;
 		});
-		stompClient.subscribe('/tetris/move', function(greeting){
-			while(!move){}
+		stompClient.subscribe('/tetris/move', function(greeting) {
+			while (!move) {
+			}
 			updateBlock(greeting);
 			move = true;
 		})
@@ -30,56 +32,67 @@ function connect() {
 }
 
 function disconnect() {
-	if(stompClient != null) {
+	if (stompClient != null) {
 		stompClient.disconnect();
 	}
 	setConnected(false);
 	console.log("Disconnected");
 }
 
-function init(){
+function init() {
 	connect();
 }
 
-function updateBlock(greeting){
+function updateBlock(greeting) {
 	move = false;
 	var update = JSON.parse(greeting.body);
-		if (update.content != "clearLines") {
-		$.each(update.grayPositions, function(key, value){
+	if (update.status == 0) {
+		$.each(update.grayPositions, function(key, value) {
 			$("#" + value.x + value.y).css('background', 'gray');
 		});
-		$.each(update.colorPositions, function(key, value){
+		$.each(update.colorPositions, function(key, value) {
 			$("#" + value.x + value.y).css('background', update.color);
 		});
-	} else {
-		$.each(update.grayPositions, function(key, value) {
-			for (var j = value.y; j >= 0; j--) {
+	} else if(update.status == 1) {
+		$.each(update.lines, function(key, value) {
+			for (var j = value; j >= 0; j--) {
 				for (var i = 0; i < 10; i++) {
-					$("#" + i + j).css('background', 
-							$("#" + i + (j - update.grayPositions.length)).css('background-color')
+					$("#" + i + j).css('background',
+							$("#" + i + (j - 1)).css('background-color')
 					);
-				}	
+				}
 			}
 		});
 	}
 }
 
-function loop(){
-	var interval = setInterval(function(){
-		stompClient.send("/app/move", {}, JSON.stringify({'x' : 0, 'y' : 1}));
-	},50);
+function loop() {
+	var interval = setInterval(function() {
+		stompClient.send("/app/move", {}, JSON.stringify({
+			'x' : 0,
+			'y' : 1
+		}));
+	}, 100);
 }
 
 function keyInput(keycode) {
-		if(keycode >= 37 && keycode <= 40 && control){
-			control = false;
-			stompClient.send("/app/controls", {}, JSON.stringify({'keyboardCode': keycode}));
-		}
+	if (keycode >= 37 && keycode <= 40 && control) {
+		control = false;
+		stompClient.send("/app/controls", {}, JSON.stringify({
+			'keyboardCode' : keycode
+		}));
+	}
 }
 
-$(function(){
-	$("#connect").click(function() {connect();});
-	$("#disconnect").click(function() {disconnect();});
-	$(document).keydown(function(event) {keyInput(event.which);});
+$(function() {
+	$("#connect").click(function() {
+		connect();
+	});
+	$("#disconnect").click(function() {
+		disconnect();
+	});
+	$(document).keydown(function(event) {
+		keyInput(event.which);
+	});
 	init();
 })
