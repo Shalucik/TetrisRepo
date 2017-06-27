@@ -24,9 +24,14 @@ function connect() {
 					move = true;
 					break;
 				case 1:
+					updateLine(update);
+					control = true;
+					move = true;
 					break;
 				case 2:
 					resetGrid();
+					control = true;
+					move = true;
 					break;					
 			}
 		});
@@ -40,12 +45,17 @@ function connect() {
 				move = true;
 				break;
 			case 1:
+				updateLine(update);
+				control = true;
+				move = true;
 				break;
 			case 2:
 				resetGrid();
+				control = true;
+				move = true;
 				break;					
-		}
-		})
+			}
+		});
 		loop();
 	});
 }
@@ -58,55 +68,66 @@ function resetGrid(){
 }
 
 function disconnect() {
-	if(stompClient != null) {
+	if (stompClient != null) {
 		stompClient.disconnect();
 	}
 	setConnected(false);
 	console.log("Disconnected");
 }
 
-function init(){
+function init() {
 	connect();
 }
 
-function updateBlock(greeting){
+function updateBlock(greeting) {
 	move = false;
-	if (greeting.content != "clearLines") {
 		$.each(greeting.grayPositions, function(key, value){
 			$("#" + value.x + value.y).css('background', 'gray');
 		});
 		$.each(greeting.colorPositions, function(key, value){
 			$("#" + value.x + value.y).css('background', greeting.color);
 		});
-	} else {
-		$.each(greeting.grayPositions, function(key, value) {
-			for (var j = value.y; j >= 0; j--) {
-				for (var i = 0; i < 10; i++) {
-					$("#" + i + j).css('background', 
-						$("#" + i + (j - greeting.grayPositions.length)).css('background-color'));
-				}
+}
+				
+function updateLine(greeting){
+	$.each(greeting.lines, function(key, value) {
+		for (var j = value; j >= 0; j--) {
+			for (var i = 0; i < 10; i++) {
+				$("#" + i + j).css('background',
+						$("#" + i + (j - 1)).css('background-color'));
 			}
-		});
-	}
-	
+		}
+	});
 }
 
-function loop(){
-	var interval = setInterval(function(){
-		stompClient.send("/app/move", {}, JSON.stringify({'x' : 0, 'y' : 1}));
-	},50);
+
+function loop() {
+	var interval = setInterval(function() {
+		stompClient.send("/app/move", {}, JSON.stringify({
+			'x' : 0,
+			'y' : 1
+		}));
+	}, 100);
 }
 
 function keyInput(keycode) {
-		if(keycode >= 37 && keycode <= 40 && control){
-			control = false;
-			stompClient.send("/app/controls", {}, JSON.stringify({'keyboardCode': keycode}));
-		}
+	if (keycode >= 37 && keycode <= 40 && control) {
+		control = false;
+		stompClient.send("/app/controls", {}, JSON.stringify({
+			'keyboardCode' : keycode
+		}));
+	}
 }
 
-$(function(){
-	$("#connect").click(function() {connect();});
-	$("#disconnect").click(function() {disconnect();});
-	$(document).keydown(function(event) {keyInput(event.which);});
+$(function() {
+	$("#connect").click(function() {
+		connect();
+	});
+	$("#disconnect").click(function() {
+		disconnect();
+	});
+	$(document).keydown(function(event) {
+		keyInput(event.which);
+	});
 	init();
 })
