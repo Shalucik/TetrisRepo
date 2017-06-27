@@ -26,6 +26,7 @@ function connect() {
 				case 1:
 					break;
 				case 2:
+					resetGrid();
 					break;					
 			}
 		});
@@ -41,11 +42,19 @@ function connect() {
 			case 1:
 				break;
 			case 2:
+				resetGrid();
 				break;					
 		}
 		})
 		loop();
 	});
+}
+
+function resetGrid(){
+	for(var i = 0; i < 20; i++)
+		for(var j = 0; j < 10; j++){
+			$("#" + j + i).css('background', 'gray');
+		}
 }
 
 function disconnect() {

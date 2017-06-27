@@ -22,6 +22,7 @@ import com.youngcapital.tetris.complete.websocket.ControlMessage;
 import com.youngcapital.tetris.complete.websocket.Greeting;
 import com.youngcapital.tetris.complete.websocket.MoveGreeting;
 import com.youngcapital.tetris.complete.websocket.MoveMessage;
+import com.youngcapital.tetris.complete.websocket.ResetGreeting;
 
 @Controller
 public class TetrisController {
@@ -62,6 +63,7 @@ public class TetrisController {
 	}
 	
 	private Greeting rotationGreeting(){
+		if(currentBlock != null) {
 		int rotation = currentBlock.getCurrentOrientation() + 1;
 		int max = currentBlock.getOrientations().length;
 		if(rotation < 0)
@@ -77,9 +79,12 @@ public class TetrisController {
 		currentBlock.setCurrentOrientation(rotation);
 		currentBlock.setCurrentPositions(newPos);
 		return new MoveGreeting("rotating", curPos, newPos, currentBlock.getColor());
+		} else return new MoveGreeting("");
 	}
 	
 	public TetrisBlock createBlock(){
+		if(currentBlock != null)
+			return currentBlock;
 		Block block = getRandomBlock();
 		
 		Point curPos = getPoint(block.getCurrentPos());
@@ -90,7 +95,13 @@ public class TetrisController {
 		oris[2] = getOrientation(block.getOrientation2());
 		oris[3] = getOrientation(block.getOrientation3());
 		
-		return new TetrisBlock(curPos, oris, 0, addPointToArray(curPos, oris[0]), block.getColor());
+		TetrisBlock TBlock = new TetrisBlock(curPos, oris, 0, addPointToArray(curPos, oris[0]), block.getColor());
+		for(Point point : TBlock.getCurrentPositions()){
+			if(checkGrid(point)){
+				return null;
+			}
+		}
+		return TBlock;
 	}
 	
 	private Point[] addPointToArray(Point point, Point[] array){
@@ -152,7 +163,10 @@ public class TetrisController {
 	@SendTo("/tetris/move")
 	public Greeting moveGreeting(MoveMessage message) {
 		if (currentBlock == null) {
-			currentBlock = createBlock();
+			if((currentBlock = createBlock()) == null){
+				grid = new boolean[gridHeight][gridWidth];
+				return new ResetGreeting("reset");
+			}
 			return new MoveGreeting("there was no block", new Point[]{}, currentBlock.getCurrentPositions(), currentBlock.getColor());
 		}
 		
@@ -166,12 +180,12 @@ public class TetrisController {
 			}
 			if(newPositions[i].y == grid.length || checkGrid(newPositions[i])){
 				updateGrid(currentPositions);
-				currentBlock = createBlock();
+				currentBlock = null;
 				Point[] line = checkForLines();
 				if (line.length > 0) {
 					return new MoveGreeting("clearLines", line, null, null);
 				}
-				return new MoveGreeting("new block", new Point[]{}, currentBlock.getCurrentPositions(), currentBlock.getColor());
+				return new MoveGreeting("new block");
 			}
 		}
 		currentBlock.setCurrentPosition(addPointToPoint(currentBlock.getCurrentPosition(), move));
