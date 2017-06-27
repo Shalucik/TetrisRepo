@@ -48,8 +48,12 @@ public class SocketController {
 			case 38:
 				return tetrisMaster.rotationGreeting(currentBlock);
 			case 39:
+				if(currentBlock == null){
+					return new MoveGreeting("no change");
+				}
 				return moveGreeting(new MoveMessage(1,0));
 			case 40:
+				return moveGreeting(new MoveMessage(0,1));
 			default:
 				return new MoveGreeting("no change");
 		}
