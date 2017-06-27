@@ -173,6 +173,7 @@ public class TetrisController {
 				currentBlock = createBlock();
 				
 				if (lines.length > 0) {
+					updateGridAfterLineRemoval(lines);
 					return new LineGreeting("clearLines", lines);
 				}
 				
@@ -223,35 +224,24 @@ public class TetrisController {
 
 	private boolean checkLine(int height){
 		for(int i = 0; i < gridWidth; i++){
-			if(!checkGrid(i, height));
+			if(!checkGrid(i, height))
 				return false;
 		}
 		return true;
 	}
 
-	private Point[] checkForLines() {
-		ArrayList<Point> linePositions = new ArrayList<>();
-		for (int i = gridHeight - 1; i >= 0; i--) {
-			boolean fullLine = true;
-			for (int j = 0; j < gridWidth; j++) {
-				if(!grid[i][j]) {
-					fullLine = false;
-					break;
-				}
-			}
-			
-			if (fullLine) {
-				System.out.println("Full line");
-				linePositions.add(new Point(0, i));
-				for (int j = i - 1; j >= 0; j--) {
-					for (int k = 0; k < grid[i].length; k++) {
-						grid[j + 1][k] = grid[j][k];
+	private void updateGridAfterLineRemoval(int[] linesToRemove) {
+		for (int line:linesToRemove) {
+			for (int y = line; y >= 0; y--) {
+				for (int x = 0; x < gridWidth; x++) {
+					if (y == 0) {
+						grid[y][x] = false;
+					} else {
+						grid[y][x] = grid[y - 1][x];	
 					}
 				}
 			}
 		}
-		return linePositions.toArray(new Point[0]);
-		
 	}
 
 	private boolean checkGrid(Point point) {
