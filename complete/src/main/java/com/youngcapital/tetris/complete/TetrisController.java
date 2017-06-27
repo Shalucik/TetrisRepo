@@ -20,6 +20,7 @@ import com.youngcapital.tetris.complete.block.Pos;
 import com.youngcapital.tetris.complete.block.TetrisBlock;
 import com.youngcapital.tetris.complete.websocket.ControlMessage;
 import com.youngcapital.tetris.complete.websocket.Greeting;
+import com.youngcapital.tetris.complete.websocket.MoveGreeting;
 import com.youngcapital.tetris.complete.websocket.MoveMessage;
 
 @Controller
@@ -56,7 +57,7 @@ public class TetrisController {
 				return moveGreeting(new MoveMessage(1,0));
 			case 40:
 			default:
-				return new Greeting("no change");
+				return new MoveGreeting("no change");
 		}
 	}
 	
@@ -71,11 +72,11 @@ public class TetrisController {
 		Point[] newPos = addPointToArray(currentBlock.getCurrentPosition(), currentBlock.getOrientations()[rotation]);
 		for(Point pos : newPos){
 			if(checkGrid(pos))
-				return new Greeting("can't rotate");
+				return new MoveGreeting("can't rotate");
 		}
 		currentBlock.setCurrentOrientation(rotation);
 		currentBlock.setCurrentPositions(newPos);
-		return new Greeting("rotating", curPos, newPos, currentBlock.getColor());
+		return new MoveGreeting("rotating", curPos, newPos, currentBlock.getColor());
 	}
 	
 	public TetrisBlock createBlock(){
@@ -152,7 +153,7 @@ public class TetrisController {
 	public Greeting moveGreeting(MoveMessage message) {
 		if (currentBlock == null) {
 			currentBlock = createBlock();
-			return new Greeting("there was no block", new Point[]{}, currentBlock.getCurrentPositions(), currentBlock.getColor());
+			return new MoveGreeting("there was no block", new Point[]{}, currentBlock.getCurrentPositions(), currentBlock.getColor());
 		}
 		
 		Point move = new Point(message.getX(), message.getY());
@@ -161,21 +162,21 @@ public class TetrisController {
 		Point[] newPositions = addPointToArray(move, currentPositions);
 		for(int i = 0; i < newPositions.length; i++){
 			if((message.getX() != 0 && checkGrid(newPositions[i]))){
-				return new Greeting("can't move");
+				return new MoveGreeting("can't move");
 			}
 			if(newPositions[i].y == grid.length || checkGrid(newPositions[i])){
 				updateGrid(currentPositions);
 				currentBlock = createBlock();
 				Point[] line = checkForLines();
 				if (line.length > 0) {
-					return new Greeting("clearLines", line, null, null);
+					return new MoveGreeting("clearLines", line, null, null);
 				}
-				return new Greeting("new block", new Point[]{}, currentBlock.getCurrentPositions(), currentBlock.getColor());
+				return new MoveGreeting("new block", new Point[]{}, currentBlock.getCurrentPositions(), currentBlock.getColor());
 			}
 		}
 		currentBlock.setCurrentPosition(addPointToPoint(currentBlock.getCurrentPosition(), move));
 		currentBlock.setCurrentPositions(newPositions);
-		return new Greeting("continue", currentPositions, newPositions, currentBlock.getColor());
+		return new MoveGreeting("continue", currentPositions, newPositions, currentBlock.getColor());
 	}
 	
 	public void updateGrid(Point[] positions){
@@ -184,17 +185,29 @@ public class TetrisController {
 			int y = positions[i].y;
 			if (x >= 0 && x < gridWidth && y >= 0 && y < gridHeight) {
 				grid[y][x] = true;
+				if(checkLine(y)){
+					
+				}
 			}
 		}
+	}
+	
+	private boolean checkLine(int height){
+		for(int i = 0; i < gridWidth; i++){
+			if(!checkGrid(i, height));
+				return false;
+		}
+		return true;
 	}
 
 	private Point[] checkForLines() {
 		ArrayList<Point> linePositions = new ArrayList<>();
-		for (int i = grid.length - 1; i >= 0; i--) {
+		for (int i = gridHeight - 1; i >= 0; i--) {
 			boolean fullLine = true;
-			for (int j = 0; j < grid[i].length; j++) {
+			for (int j = 0; j < gridWidth; j++) {
 				if(!grid[i][j]) {
 					fullLine = false;
+					break;
 				}
 			}
 			
@@ -212,9 +225,13 @@ public class TetrisController {
 		
 	}
 
-	public boolean checkGrid(Point point) {
-		if (point.getX() >= 0 && point.getX() < grid[0].length && point.getY() >= 0 && point.getY() < grid.length) {
-			return grid[point.y][point.x];
+	private boolean checkGrid(Point point) {
+		return checkGrid(point.x, point.y);
+	}
+	
+	private boolean checkGrid(int width, int height){
+		if (width >= 0 && width < gridWidth && height >= 0 && height < gridHeight) {
+			return grid[height][width];
 		}
 		return true;
 	}

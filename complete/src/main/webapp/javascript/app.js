@@ -1,5 +1,6 @@
 var stompClient = null;
-var control = true; 
+var control = true;
+var move = true;
 
 function setConnected(connected) {
 	$("#connect").prop("disabled", connected);
@@ -14,11 +15,15 @@ function connect() {
 		setConnected(true);
 		console.log('Connected: ' + frame);
 		stompClient.subscribe('/tetris/output', function (greeting) {
+			while(!move){}
 			updateBlock(greeting);
 			control = true;
+			move = true;
 		});
 		stompClient.subscribe('/tetris/move', function(greeting){
+			while(!move){}
 			updateBlock(greeting);
+			move = true;
 		})
 		loop();
 	});
@@ -37,6 +42,7 @@ function init(){
 }
 
 function updateBlock(greeting){
+	move = false;
 	var update = JSON.parse(greeting.body);
 		if (update.content != "clearLines") {
 		$.each(update.grayPositions, function(key, value){
@@ -61,7 +67,7 @@ function updateBlock(greeting){
 function loop(){
 	var interval = setInterval(function(){
 		stompClient.send("/app/move", {}, JSON.stringify({'x' : 0, 'y' : 1}));
-	},100);
+	},50);
 }
 
 function keyInput(keycode) {
