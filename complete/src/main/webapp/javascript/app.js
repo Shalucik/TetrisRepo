@@ -17,19 +17,32 @@ function connect() {
 		stompClient.subscribe('/tetris/output', function (greeting) {
 			while(!move){}
 			var update = JSON.parse(greeting.body);
-			if(update.status == 0){
-				updateBlock(update);
-				control = true;
-				move = true;
+			switch(update.status){
+				case 0:
+					updateBlock(update);
+					control = true;
+					move = true;
+					break;
+				case 1:
+					break;
+				case 2:
+					break;					
 			}
 		});
 		stompClient.subscribe('/tetris/move', function(greeting){
 			while(!move){}
 			var update = JSON.parse(greeting.body);
-			if(update.status == 0) {
+			switch(update.status){
+			case 0:
 				updateBlock(update);
+				control = true;
 				move = true;
-			}
+				break;
+			case 1:
+				break;
+			case 2:
+				break;					
+		}
 		})
 		loop();
 	});
