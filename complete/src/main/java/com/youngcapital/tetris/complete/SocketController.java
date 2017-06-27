@@ -76,6 +76,8 @@ public class SocketController {
 		if(greeting == null){
 			currentBlock = null;
 			return new MoveGreeting("new block");
+		} else if(greeting.getStatus() == 1) {
+			currentBlock = null;
 		}
 		return greeting;
 	}

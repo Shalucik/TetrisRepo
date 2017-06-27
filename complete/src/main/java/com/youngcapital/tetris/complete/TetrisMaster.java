@@ -139,13 +139,8 @@ public class TetrisMaster {
 			}
 			if(newPositions[i].y == grid.length || checkGrid(newPositions[i])){
 				int[] lines = updateGrid(currentPositions);
-				
-				currentBlock = null;
-				
 				if (lines.length > 0) {
-					
 					updateGridAfterLineRemoval(lines);
-					
 					return new LineGreeting("clearLines", lines);
 				}
 				
