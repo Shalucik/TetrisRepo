@@ -25,7 +25,7 @@ public class TetrisMaster {
 		grid = new boolean[gridHeight][gridWidth];
 	}
 	
-	public Greeting rotationGreeting(TetrisBlock currentBlock){
+	public Greeting rotationGreeting(TetrisBlock currentBlock, TetrisBlock nextBlock){
 		if (currentBlock != null) {
 			int rotation = currentBlock.getCurrentOrientation() + 1;
 			int max = currentBlock.getOrientations().length;
@@ -41,7 +41,7 @@ public class TetrisMaster {
 			}
 			currentBlock.setCurrentOrientation(rotation);
 			currentBlock.setCurrentPositions(newPos);
-			return new MoveGreeting("rotating", curPos, newPos, currentBlock.getColor());
+			return new MoveGreeting("rotating", curPos, newPos, currentBlock.getColor(), nextBlock.getOrientations()[nextBlock.getCurrentOrientation()], nextBlock.getColor());
 		}
 		return new MoveGreeting("");
 	}
@@ -128,14 +128,15 @@ public class TetrisMaster {
 		return true;
 	}
 	
-	public Greeting moveGreeting(MoveMessage message, TetrisBlock currentBlock) {
+	public Greeting moveGreeting(MoveMessage message, TetrisBlock currentBlock, TetrisBlock nextBlock) {
 		Point move = new Point(message.getX(), message.getY());
 		
 		Point[] currentPositions = currentBlock.getCurrentPositions();
 		Point[] newPositions = TetrisMaster.addPointToArray(move, currentPositions);
 		for(int i = 0; i < newPositions.length; i++){
 			if((message.getX() != 0 && checkGrid(newPositions[i]))){
-				return new MoveGreeting("can't move");
+				return new MoveGreeting("can't move", 
+						nextBlock.getOrientations()[nextBlock.getCurrentOrientation()], nextBlock.getColor());
 			}
 			if(newPositions[i].y == grid.length || checkGrid(newPositions[i])){
 				int[] lines = updateGrid(currentPositions);
@@ -149,6 +150,7 @@ public class TetrisMaster {
 		}
 		currentBlock.setCurrentPosition(TetrisMaster.addPointToPoint(currentBlock.getCurrentPosition(), move));
 		currentBlock.setCurrentPositions(newPositions);
-		return new MoveGreeting("continue", currentPositions, newPositions, currentBlock.getColor());
+		return new MoveGreeting("continue", currentPositions, newPositions, currentBlock.getColor(), 
+				nextBlock.getOrientations()[nextBlock.getCurrentOrientation()], nextBlock.getColor());
 	}
 }

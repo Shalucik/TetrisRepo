@@ -17,9 +17,7 @@ public class ModelMaster {
 		this.bRepo = bRepo;
 	}
 
-	public TetrisBlock createBlock(TetrisBlock currentBlock){
-		if(currentBlock != null)
-			return currentBlock;
+	public TetrisBlock createBlock(){
 		Block block = getRandomBlock();
 		
 		Point curPos = getPoint(block.getCurrentPos());
@@ -30,7 +28,9 @@ public class ModelMaster {
 		oris[2] = getOrientation(block.getOrientation2());
 		oris[3] = getOrientation(block.getOrientation3());
 		
-		return new TetrisBlock(curPos, oris, 0, TetrisMaster.addPointToArray(curPos, oris[0]), block.getColor());
+		int randomOrientation = (int)(Math.random() * 4); 
+		
+		return new TetrisBlock(curPos, oris, randomOrientation, TetrisMaster.addPointToArray(curPos, oris[randomOrientation]), block.getColor());
 	}
 	
 	public Point[] getOrientation(Orientation ori){

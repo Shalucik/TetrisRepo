@@ -53,7 +53,7 @@ function connect() {
 				resetGrid();
 				control = true;
 				move = true;
-				break;					
+				break;
 			}
 		});
 		loop();
@@ -87,16 +87,53 @@ function updateBlock(greeting) {
 		$.each(greeting.colorPositions, function(key, value){
 			$("#" + value.x + value.y).css('background', greeting.color);
 		});
+		
+		console.log(greeting);
+		
+		showNextBlock(greeting);
 }
 				
 function updateLine(greeting){
 	$.each(greeting.lines, function(key, value) {
 		for (var j = value; j >= 0; j--) {
 			for (var i = 0; i < 10; i++) {
+				$("#" + i + j).css('transition', '1s');
 				$("#" + i + j).css('background',
 						$("#" + i + (j - 1)).css('background-color'));
+				$("#" + i + j).css('transition', 'none');
 			}
 		}
+	});
+}
+
+function showNextBlock(greeting) {
+	for (var y = 0; y < 4; y++) {
+		for (var x = 0; x < 4; x++) {
+			$("#next" + y + x).css('background', 'gray');
+		}
+	}
+	
+	var lowestX = 0;
+	var lowestY = 0;
+	
+	$.each(greeting.nextPositions, function(key, value) {
+		if (value.x < 0) { 
+			if (value.x < lowestX) {
+				lowestX = value.x;
+			}
+		}
+		if (value.y < 0) {
+			if (value.y < lowestY) {
+				lowestY = value.y;
+			}
+		}
+	});
+	
+	lowestX *= -1;
+	lowestY *= -1;
+	
+	$.each(greeting.nextPositions, function(key, value){
+		$("#next" + (value.x + lowestX) + (value.y + lowestY)).css('background', greeting.nextColor);
 	});
 }
 

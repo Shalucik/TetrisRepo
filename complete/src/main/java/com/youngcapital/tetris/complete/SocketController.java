@@ -1,6 +1,7 @@
 package com.youngcapital.tetris.complete;
 
 import java.awt.Point;
+import java.util.LinkedList;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -27,6 +28,7 @@ public class SocketController {
 	private TetrisMaster tetrisMaster;
 	private ModelMaster modelMaster;
 	private TetrisBlock currentBlock;
+	private LinkedList<TetrisBlock> currentBlockQueue;
 
 	@RequestMapping("/tetris")
 	public String createPage(Model model){
@@ -36,6 +38,8 @@ public class SocketController {
 		model.addAttribute("gridHeight", 20-1);
 		model.addAttribute("gridWidth", 10-1);	
 		currentBlock = null;
+		currentBlockQueue = new LinkedList<TetrisBlock>();
+		currentBlockQueue.addLast(modelMaster.createBlock());
 		return "tetris";
 	}
 
@@ -46,7 +50,7 @@ public class SocketController {
 			case 37:
 				return moveGreeting(new MoveMessage(-1,0));
 			case 38:
-				return tetrisMaster.rotationGreeting(currentBlock);
+				return tetrisMaster.rotationGreeting(currentBlock, currentBlockQueue.getLast());
 			case 39:
 				if(currentBlock == null){
 					return new MoveGreeting("no change");
@@ -63,19 +67,25 @@ public class SocketController {
 	@SendTo("/tetris/move")
 	public Greeting moveGreeting(MoveMessage message) {
 		if (currentBlock == null) {
-			currentBlock = modelMaster.createBlock(currentBlock);
+			currentBlockQueue.addLast(modelMaster.createBlock());
+			currentBlock = currentBlockQueue.removeFirst();
 			for(Point point : currentBlock.getCurrentPositions()){
 				if(tetrisMaster.checkGrid(point)){
 					tetrisMaster.resetGrid();
 					return new ResetGreeting("reset");
 				}
-			}			
-			return new MoveGreeting("there was no block", new Point[]{}, currentBlock.getCurrentPositions(), currentBlock.getColor());
+			}
+			TetrisBlock nb = currentBlockQueue.getLast();
+			return new MoveGreeting("there was no block", new Point[]{}, currentBlock.getCurrentPositions(), currentBlock.getColor(),
+					nb.getOrientations()[nb.getCurrentOrientation()], nb.getColor());
 		}
-		Greeting greeting = tetrisMaster.moveGreeting(message, currentBlock);
+		
+		Greeting greeting = tetrisMaster.moveGreeting(message, currentBlock, currentBlockQueue.getLast());
+		
 		if(greeting == null){
 			currentBlock = null;
-			return new MoveGreeting("new block");
+			TetrisBlock nb = currentBlockQueue.getLast();
+			return new MoveGreeting("new block", nb.getOrientations()[nb.getCurrentOrientation()], nb.getColor());
 		} else if(greeting.getStatus() == 1) {
 			currentBlock = null;
 		}
