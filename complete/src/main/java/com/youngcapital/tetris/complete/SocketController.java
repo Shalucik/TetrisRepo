@@ -31,7 +31,6 @@ public class SocketController {
 	private TetrisMaster tetrisMaster;
 	private ModelMaster modelMaster;
 	private TetrisBlock currentBlock;
-	private Long score = new Long(0);
 
 	@RequestMapping("/tetris")
 	public String createPage(Model model){
@@ -72,8 +71,8 @@ public class SocketController {
 			for(Point point : currentBlock.getCurrentPositions()){
 				if(tetrisMaster.checkGrid(point)){
 					tetrisMaster.resetGrid();
-					modelMaster.addScore(hRepo, "bla", score);
-					score = (long) 0;
+					modelMaster.addScore(hRepo, "bla", tetrisMaster.getScore());
+					tetrisMaster.setScore(0l);
 					return new ResetGreeting("reset");
 				}
 			}			
@@ -85,7 +84,6 @@ public class SocketController {
 			return new MoveGreeting("new block");
 		} else if(greeting.getStatus() == 1) {
 			currentBlock = null;
-			score++;
 		}
 		return greeting;
 	}

@@ -14,6 +14,7 @@ public class TetrisMaster {
 	private int gridWidth;
 	private int gridHeight;
 	private boolean[][] grid;
+	private Long score = new Long(0);
 
 	public TetrisMaster(int gridWidth, int gridHeight){
 		this.gridHeight = gridHeight;
@@ -141,7 +142,8 @@ public class TetrisMaster {
 				int[] lines = updateGrid(currentPositions);
 				if (lines.length > 0) {
 					updateGridAfterLineRemoval(lines);
-					return new LineGreeting("clearLines", lines);
+					score += lines.length;
+					return new LineGreeting("clearLines", lines, score);
 				}
 				
 				return null;
@@ -150,5 +152,13 @@ public class TetrisMaster {
 		currentBlock.setCurrentPosition(TetrisMaster.addPointToPoint(currentBlock.getCurrentPosition(), move));
 		currentBlock.setCurrentPositions(newPositions);
 		return new MoveGreeting("continue", currentPositions, newPositions, currentBlock.getColor());
+	}
+
+	public Long getScore() {
+		return score;
+	}
+
+	public void setScore(Long score) {
+		this.score = score;
 	}
 }

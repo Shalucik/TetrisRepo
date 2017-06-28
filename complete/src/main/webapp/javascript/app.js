@@ -61,6 +61,7 @@ function connect() {
 }
 
 function resetGrid(){
+	$("#score").text(0);
 	for(var i = 0; i < 20; i++)
 		for(var j = 0; j < 10; j++){
 			$("#" + j + i).css('background', 'gray');
@@ -90,6 +91,7 @@ function updateBlock(greeting) {
 }
 				
 function updateLine(greeting){
+	$("#score").text(greeting.score);
 	$.each(greeting.lines, function(key, value) {
 		for (var j = value; j >= 0; j--) {
 			for (var i = 0; i < 10; i++) {
