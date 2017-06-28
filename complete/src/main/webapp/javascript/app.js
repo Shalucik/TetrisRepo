@@ -1,6 +1,8 @@
 var stompClient = null;
 var control = true;
 var move = true;
+var interval;
+var time = 500;
 
 function setConnected(connected) {
 	$("#connect").prop("disabled", connected);
@@ -56,12 +58,18 @@ function connect() {
 				break;					
 			}
 		});
-		loop();
+		var speed = setInterval(function() {
+			clearInterval(interval);
+			time -= 1;
+			loop(time);			
+		}, 1000);
+		
 	});
 }
 
 function resetGrid(){
 	$("#score").text(0);
+	time = 500;
 	for(var i = 0; i < 20; i++)
 		for(var j = 0; j < 10; j++){
 			$("#" + j + i).css('background', 'gray');
@@ -103,14 +111,15 @@ function updateLine(greeting){
 }
 
 
-function loop() {
-	var interval = setInterval(function() {
+function loop(time) {
+	interval = setInterval(function() {
 		stompClient.send("/app/move", {}, JSON.stringify({
 			'x' : 0,
 			'y' : 1
 		}));
-	}, 1000);
+	}, time);	
 }
+
 
 function keyInput(keycode) {
 	if (keycode >= 37 && keycode <= 40 && control) {
