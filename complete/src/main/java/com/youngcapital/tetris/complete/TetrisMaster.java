@@ -21,11 +21,11 @@ public class TetrisMaster {
 		resetGrid();
 	}
 	
-	public void resetGrid(){
+	void resetGrid(){
 		grid = new boolean[gridHeight][gridWidth];
 	}
 	
-	public Greeting rotationGreeting(TetrisBlock currentBlock, TetrisBlock nextBlock){
+	Greeting rotationGreeting(TetrisBlock currentBlock, TetrisBlock nextBlock){
 		if (currentBlock != null) {
 			int rotation = currentBlock.getCurrentOrientation() + 1;
 			int max = currentBlock.getOrientations().length;
@@ -46,7 +46,7 @@ public class TetrisMaster {
 		return new MoveGreeting("");
 	}
 	
-	public static Point[] addPointToArray(Point point, Point[] array){
+	static Point[] addPointToArray(Point point, Point[] array){
 		Point[] curPos = new Point[array.length];
 		for(int i = 0; i < curPos.length; i++){
 			curPos[i] = addPointToPoint(point, array[i]);
@@ -54,11 +54,11 @@ public class TetrisMaster {
 		return curPos;
 	}
 	
-	public static Point addPointToPoint(Point p, Point q){
+	static Point addPointToPoint(Point p, Point q){
 		return new Point(p.x + q.x, p.y + q.y);
 	}
 	
-	public int[] updateGrid(Point[] positions){
+	int[] updateGrid(Point[] positions){
 		ArrayList<Integer> lines = new ArrayList<>();
 		for (int i = 0; i < positions.length; i++) {
 			int x = positions[i].x;
@@ -103,7 +103,7 @@ public class TetrisMaster {
 		return true;
 	}
 
-	public void updateGridAfterLineRemoval(int[] linesToRemove) {
+	void updateGridAfterLineRemoval(int[] linesToRemove) {
 		for (int line:linesToRemove) {
 			for (int y = line; y >= 0; y--) {
 				for (int x = 0; x < gridWidth; x++) {
@@ -117,7 +117,7 @@ public class TetrisMaster {
 		}
 	}
 
-	public boolean checkGrid(Point point) {
+	boolean checkGrid(Point point) {
 		return checkGrid(point.x, point.y);
 	}
 	
@@ -128,7 +128,7 @@ public class TetrisMaster {
 		return true;
 	}
 	
-	public Greeting moveGreeting(MoveMessage message, TetrisBlock currentBlock, TetrisBlock nextBlock) {
+	Greeting moveGreeting(MoveMessage message, TetrisBlock currentBlock, TetrisBlock nextBlock) {
 		Point move = new Point(message.getX(), message.getY());
 		
 		Point[] currentPositions = currentBlock.getCurrentPositions();

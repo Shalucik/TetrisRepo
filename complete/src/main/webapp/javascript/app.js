@@ -14,31 +14,33 @@ function connect() {
 	stompClient.connect({}, function(frame) {
 		setConnected(true);
 		console.log('Connected: ' + frame);
-		stompClient.subscribe('/tetris/output', function (greeting) {
-			while(!move){}
+		stompClient.subscribe('/tetris/output', function(greeting) {
+			while (!move) {
+			}
 			var update = JSON.parse(greeting.body);
-			switch(update.status){
-				case 0:
-					updateBlock(update);
-					control = true;
-					move = true;
-					break;
-				case 1:
-					updateLine(update);
-					control = true;
-					move = true;
-					break;
-				case 2:
-					resetGrid();
-					control = true;
-					move = true;
-					break;					
+			switch (update.status) {
+			case 0:
+				updateBlock(update);
+				control = true;
+				move = true;
+				break;
+			case 1:
+				updateLine(update);
+				control = true;
+				move = true;
+				break;
+			case 2:
+				resetGrid();
+				control = true;
+				move = true;
+				break;
 			}
 		});
-		stompClient.subscribe('/tetris/move', function(greeting){
-			while(!move){}
+		stompClient.subscribe('/tetris/move', function(greeting) {
+			while (!move) {
+			}
 			var update = JSON.parse(greeting.body);
-			switch(update.status){
+			switch (update.status) {
 			case 0:
 				updateBlock(update);
 				control = true;
@@ -60,9 +62,9 @@ function connect() {
 	});
 }
 
-function resetGrid(){
-	for(var i = 0; i < 20; i++)
-		for(var j = 0; j < 10; j++){
+function resetGrid() {
+	for (var i = 0; i < 20; i++)
+		for (var j = 0; j < 10; j++) {
 			$("#" + j + i).css('background', 'gray');
 		}
 }
@@ -81,19 +83,19 @@ function init() {
 
 function updateBlock(greeting) {
 	move = false;
-		$.each(greeting.grayPositions, function(key, value){
-			$("#" + value.x + value.y).css('background', 'gray');
-		});
-		$.each(greeting.colorPositions, function(key, value){
-			$("#" + value.x + value.y).css('background', greeting.color);
-		});
-		
-		console.log(greeting);
-		
-		showNextBlock(greeting);
+	$.each(greeting.grayPositions, function(key, value) {
+		$("#" + value.x + value.y).css('background', 'gray');
+	});
+	$.each(greeting.colorPositions, function(key, value) {
+		$("#" + value.x + value.y).css('background', greeting.color);
+	});
+
+	console.log(greeting);
+
+	showNextBlock(greeting);
 }
-				
-function updateLine(greeting){
+
+function updateLine(greeting) {
 	$.each(greeting.lines, function(key, value) {
 		for (var j = value; j >= 0; j--) {
 			for (var i = 0; i < 10; i++) {
@@ -107,36 +109,58 @@ function updateLine(greeting){
 }
 
 function showNextBlock(greeting) {
-	for (var y = 0; y < 4; y++) {
-		for (var x = 0; x < 4; x++) {
-			$("#next" + y + x).css('background', 'gray');
-		}
-	}
-	
-	var lowestX = 0;
-	var lowestY = 0;
-	
-	$.each(greeting.nextPositions, function(key, value) {
-		if (value.x < 0) { 
-			if (value.x < lowestX) {
-				lowestX = value.x;
+	if (greeting.nextPositions.length != null && greeting.nextPositions.length > 0) {
+		for (var y = 0; y < 4; y++) {
+			for (var x = 0; x < 4; x++) {
+				$("#next" + y + x).css('background', 'gray');
 			}
 		}
-		if (value.y < 0) {
-			if (value.y < lowestY) {
-				lowestY = value.y;
-			}
-		}
-	});
-	
-	lowestX *= -1;
-	lowestY *= -1;
-	
-	$.each(greeting.nextPositions, function(key, value){
-		$("#next" + (value.x + lowestX) + (value.y + lowestY)).css('background', greeting.nextColor);
-	});
-}
 
+		var lowestX = 0;
+		var lowestY = 0;
+		var highestX = 0;
+		var highestY = 0;
+
+		$.each(greeting.nextPositions, function(key, value) {
+			if (value.x < 0) {
+				if (value.x < lowestX) {
+					lowestX = value.x;
+				}
+			}
+			if (value.y < 0) {
+				if (value.y < lowestY) {
+					lowestY = value.y;
+				}
+			}
+		});
+
+		lowestX *= -1;
+		lowestY *= -1;
+
+		var increaseX = true;
+		var increaseY = true;
+		$.each(greeting.nextPositions, function(key, value) {
+			if (value.x + lowestX >= 2) {
+				increaseX = false;
+			}
+			if (value.y + lowestY >= 3) {
+				increaseY = false;
+			}
+		});
+		
+		if (increaseX) {
+			lowestX++;
+		}
+		if (increaseY) {
+			lowestY++;
+		}
+
+		$.each(greeting.nextPositions, function(key, value) {
+			$("#next" + (value.x + lowestX) + (value.y + lowestY)).css(
+					'background', greeting.nextColor);
+		});
+	}
+}
 
 function loop() {
 	var interval = setInterval(function() {
@@ -148,7 +172,7 @@ function loop() {
 }
 
 function keyInput(keycode) {
-	if (keycode >= 37 && keycode <= 40 && control) {
+	if ((keycode >= 37 && keycode <= 40 && control) || keycode == 32) {
 		control = false;
 		stompClient.send("/app/controls", {}, JSON.stringify({
 			'keyboardCode' : keycode
