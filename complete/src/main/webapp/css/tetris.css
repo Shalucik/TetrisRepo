@@ -5,6 +5,7 @@ td {
 	border:solid black 1px;
 }
 
-table {
-	border-collapse:collapse;
+.table {
+	border-collapse:inherit;
+	width:50%;
 }
