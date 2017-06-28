@@ -18,6 +18,6 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer{
 	
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
-		registry.addEndpoint("/tetris-websocket").withSockJS();
+		registry.addEndpoint("/tetris-websocket").addInterceptors(new HttpHandshakeInterceptor()).withSockJS();
 	}
 }

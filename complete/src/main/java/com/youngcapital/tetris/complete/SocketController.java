@@ -2,9 +2,12 @@ package com.youngcapital.tetris.complete;
 
 import java.awt.Point;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,9 +36,10 @@ public class SocketController {
 	private TetrisBlock currentBlock;
 
 	@RequestMapping("/tetris")
-	public String createPage(Model model){
+	public String createPage(Model model, HttpSession session){
 		tetrisMaster = new TetrisMaster(10, 20);
 		modelMaster = new ModelMaster(bRepo);
+		
 		
 		model.addAttribute("gridHeight", 20-1);
 		model.addAttribute("gridWidth", 10-1);	
@@ -45,19 +49,19 @@ public class SocketController {
 
 	@MessageMapping("/controls")
 	@SendTo("/tetris/output")
-	public synchronized Greeting controlgreeting(ControlMessage message){
+	public synchronized Greeting controlgreeting(ControlMessage message, SimpMessageHeaderAccessor headerAccessor){
 		switch(message.getKeyboardCode()){
 			case 37:
-				return moveGreeting(new MoveMessage(-1,0));
+				return moveGreeting(new MoveMessage(-1,0), headerAccessor);
 			case 38:
 				return tetrisMaster.rotationGreeting(currentBlock);
 			case 39:
 				if(currentBlock == null){
 					return new MoveGreeting("no change");
 				}
-				return moveGreeting(new MoveMessage(1,0));
+				return moveGreeting(new MoveMessage(1,0), headerAccessor);
 			case 40:
-				return moveGreeting(new MoveMessage(0,1));
+				return moveGreeting(new MoveMessage(0,1), headerAccessor);
 			default:
 				return new MoveGreeting("no change");
 		}
@@ -65,7 +69,8 @@ public class SocketController {
 
 	@MessageMapping("/move")
 	@SendTo("/tetris/move")
-	public Greeting moveGreeting(MoveMessage message) {
+	public Greeting moveGreeting(MoveMessage message, SimpMessageHeaderAccessor headerAccessor) {
+		String sessionID = headerAccessor.getSessionAttributes().get("sessionId").toString();
 		if (currentBlock == null) {
 			currentBlock = modelMaster.createBlock(currentBlock);
 			for(Point point : currentBlock.getCurrentPositions()){
