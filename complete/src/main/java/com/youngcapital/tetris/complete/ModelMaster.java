@@ -5,6 +5,8 @@ import java.util.List;
 
 import com.youngcapital.tetris.complete.block.Block;
 import com.youngcapital.tetris.complete.block.BlockRepository;
+import com.youngcapital.tetris.complete.block.Highscore;
+import com.youngcapital.tetris.complete.block.HighscoreRepository;
 import com.youngcapital.tetris.complete.block.Orientation;
 import com.youngcapital.tetris.complete.block.Pos;
 import com.youngcapital.tetris.complete.block.TetrisBlock;
@@ -74,6 +76,14 @@ public class ModelMaster {
 		}
 		
 		return list == null ? null : list.get(0);
+	}
+	
+	public boolean addScore(HighscoreRepository hRepo, String name, Long score){
+		Highscore highScore = new Highscore();
+		highScore.setName(name);
+		highScore.setScore(score);
+		hRepo.save(highScore);
+		return true;
 	}
 	
 	public String makeDB() {

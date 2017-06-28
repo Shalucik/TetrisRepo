@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.youngcapital.tetris.complete.block.BlockRepository;
+import com.youngcapital.tetris.complete.block.HighscoreRepository;
 import com.youngcapital.tetris.complete.block.TetrisBlock;
 import com.youngcapital.tetris.complete.websocket.ControlMessage;
 import com.youngcapital.tetris.complete.websocket.Greeting;
@@ -23,10 +24,14 @@ public class SocketController {
 	
 	@Autowired
 	private BlockRepository bRepo;
+	
+	@Autowired
+	private HighscoreRepository hRepo;
 
 	private TetrisMaster tetrisMaster;
 	private ModelMaster modelMaster;
 	private TetrisBlock currentBlock;
+	private Long score = new Long(0);
 
 	@RequestMapping("/tetris")
 	public String createPage(Model model){
@@ -67,6 +72,8 @@ public class SocketController {
 			for(Point point : currentBlock.getCurrentPositions()){
 				if(tetrisMaster.checkGrid(point)){
 					tetrisMaster.resetGrid();
+					modelMaster.addScore(hRepo, "bla", score);
+					score = (long) 0;
 					return new ResetGreeting("reset");
 				}
 			}			
@@ -78,6 +85,7 @@ public class SocketController {
 			return new MoveGreeting("new block");
 		} else if(greeting.getStatus() == 1) {
 			currentBlock = null;
+			score++;
 		}
 		return greeting;
 	}
@@ -87,6 +95,7 @@ public class SocketController {
 
 	@RequestMapping("/test")
 	public @ResponseBody String makeDB() {
+		modelMaster = new ModelMaster(bRepo);
 		return modelMaster.makeDB();
 	}
 }
