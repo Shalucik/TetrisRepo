@@ -12,8 +12,9 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer{
 	
 	@Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker("/tetris");
+		config.enableSimpleBroker("/queue", "/tetris");
         config.setApplicationDestinationPrefixes("/app");
+        config.setUserDestinationPrefix("/user");
     }
 	
 	@Override

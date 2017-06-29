@@ -16,7 +16,7 @@ function connect() {
 	stompClient.connect({}, function(frame) {
 		setConnected(true);
 		console.log('Connected: ' + frame);
-		stompClient.subscribe('/tetris/output', function (greeting) {
+		stompClient.subscribe('/user/queue/controls', function (greeting) {
 			while(!move){}
 			var update = JSON.parse(greeting.body);
 			switch(update.status){
@@ -37,7 +37,7 @@ function connect() {
 					break;					
 			}
 		});
-		stompClient.subscribe('/tetris/move', function(greeting){
+		stompClient.subscribe('/user/queue/move', function(greeting){
 			while(!move){}
 			var update = JSON.parse(greeting.body);
 			switch(update.status){
