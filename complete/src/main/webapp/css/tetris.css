@@ -8,3 +8,9 @@ td {
 table {
 	border-collapse:collapse;
 }
+
+#container2 {
+	margin: 0 40%;
+	margin-top:0;
+	min-width: 260px;
+}

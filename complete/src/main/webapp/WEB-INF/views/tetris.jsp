@@ -17,30 +17,34 @@
 </head>
 
 <body>
-	<button id="connect" class="btn btn-default" type="submit">Connect</button>
-	<button id="disconnect" class="btn btn-default" type="submit"
-		disabled="disabled">Disconnect</button>
-	<table>
-		<tbody>
-			<c:forEach var="i" begin="0" end="3">
-				<tr>
-					<c:forEach var="j" begin="0" end="3">
-						<td id="next${j}${i}"></td>
-					</c:forEach>
-				</tr>
-			</c:forEach>
-		</tbody>
-	</table>
-	<table>
-		<tbody>
-			<c:forEach var="i" begin="0" end="${gridHeight}">
-				<tr>
-					<c:forEach var="j" begin="0" end="${gridWidth}">
-						<td id="${j}${i}"></td>
-					</c:forEach>
-				</tr>
-			</c:forEach>
-		</tbody>
-	</table>
+	<div id="container1">
+		<button id="connect" class="btn btn-default" type="submit">Connect</button>
+		<button id="disconnect" class="btn btn-default" type="submit"
+			disabled="disabled">Disconnect</button>
+		<table>
+			<tbody>
+				<c:forEach var="i" begin="0" end="3">
+					<tr>
+						<c:forEach var="j" begin="0" end="3">
+							<td id="next${j}${i}"></td>
+						</c:forEach>
+					</tr>
+				</c:forEach>
+			</tbody>
+		</table>
+	</div>
+	<div id="container2">
+		<table>
+			<tbody>
+				<c:forEach var="i" begin="0" end="${gridHeight}">
+					<tr>
+						<c:forEach var="j" begin="0" end="${gridWidth}">
+							<td id="${j}${i}"></td>
+						</c:forEach>
+					</tr>
+				</c:forEach>
+			</tbody>
+		</table>
+	</div>
 </body>
 </html>
