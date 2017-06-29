@@ -105,7 +105,7 @@ public class SocketController {
 				session.getCurrentBlock().getColor(), nb.getOrientations()[nb.getCurrentOrientation()], nb.getColor());		
 	}
 	
-	public Greeting moveBlock(MoveMessage message, SessionMaster session){		
+	public synchronized Greeting moveBlock(MoveMessage message, SessionMaster session){		
 		TetrisMaster tetrisMaster = session.getTetrisMaster();		
 		Greeting greeting = tetrisMaster.moveGreeting(message, session.getCurrentBlock(), session.getCurrentBlockQueue().getLast());
 		
