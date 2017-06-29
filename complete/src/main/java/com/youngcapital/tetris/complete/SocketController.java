@@ -63,13 +63,13 @@ public class SocketController {
 			case 32:
 				
 			case 37:				
-				return moveBlock(new MoveMessage(-1,0), headerAccessor);
+				return moveBlock(new MoveMessage(-1,0), session);
 			case 38:
 				return tetrisMaster.rotationGreeting(currentBlock, nextBlock);
 			case 39:				
-				return moveBlock(new MoveMessage(1,0), headerAccessor);
+				return moveBlock(new MoveMessage(1,0), session);
 			case 40:				
-				return moveBlock(new MoveMessage(0,1), headerAccessor);
+				return moveBlock(new MoveMessage(0,1), session);
 			default:
 				return new MoveGreeting("no change");
 		}
@@ -77,22 +77,17 @@ public class SocketController {
 	
 
 	@MessageMapping("/move")
-
 	@SendToUser
 	public synchronized Greeting moveGreeting(@Payload MoveMessage message, SimpMessageHeaderAccessor headerAccessor) {		
 		String sessionId = headerAccessor.getSessionAttributes().get("sessionId").toString();
-		SessionMaster session = sessionMap.get(sessionId);
-		TetrisMaster tetrisMaster = session.getTetrisMaster();
-		ModelMaster modelMaster = session.getModelMaster();
+		SessionMaster session = sessionMap.get(sessionId);		
 		if(session.getCurrentBlock() == null){
-			return newBlock(message, headerAccessor);
+			return newBlock(message, session);
 		}
-		return moveBlock(message, headerAccessor);
+		return moveBlock(message, session);
 	}
 	
-	public Greeting newBlock(MoveMessage message, SimpMessageHeaderAccessor headerAccessor){
-		String sessionId = headerAccessor.getSessionAttributes().get("sessionId").toString();
-		SessionMaster session = sessionMap.get(sessionId);
+	public Greeting newBlock(MoveMessage message, SessionMaster session){		
 		TetrisMaster tetrisMaster = session.getTetrisMaster();
 		ModelMaster modelMaster = session.getModelMaster();
 		session.getCurrentBlockQueue().addLast(session.getModelMaster().createBlock());
@@ -110,16 +105,12 @@ public class SocketController {
 				session.getCurrentBlock().getColor(), nb.getOrientations()[nb.getCurrentOrientation()], nb.getColor());		
 	}
 	
-	public Greeting moveBlock(MoveMessage message, SimpMessageHeaderAccessor headerAccessor){
-		String sessionId = headerAccessor.getSessionAttributes().get("sessionId").toString();
-		SessionMaster session = sessionMap.get(sessionId);
-		TetrisMaster tetrisMaster = session.getTetrisMaster();
-		ModelMaster modelMaster = session.getModelMaster();
+	public Greeting moveBlock(MoveMessage message, SessionMaster session){		
+		TetrisMaster tetrisMaster = session.getTetrisMaster();		
 		Greeting greeting = tetrisMaster.moveGreeting(message, session.getCurrentBlock(), session.getCurrentBlockQueue().getLast());
 		
 		if(greeting == null){
-			session.setCurrentBlock(null);
-			TetrisBlock nb = session.getCurrentBlockQueue().getLast();
+			session.setCurrentBlock(null);			
 			return new MoveGreeting("new block");
 		} else if(greeting.getStatus() == 1) {
 			session.setCurrentBlock(null);
