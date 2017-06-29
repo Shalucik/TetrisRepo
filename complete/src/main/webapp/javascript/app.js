@@ -118,8 +118,6 @@ function showNextBlock(greeting) {
 
 		var lowestX = 0;
 		var lowestY = 0;
-		var highestX = 0;
-		var highestY = 0;
 
 		$.each(greeting.nextPositions, function(key, value) {
 			if (value.x < 0) {
