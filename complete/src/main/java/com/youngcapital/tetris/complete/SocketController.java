@@ -57,20 +57,19 @@ public class SocketController {
 		TetrisMaster tetrisMaster = session.getTetrisMaster();
 		TetrisBlock currentBlock = session.getCurrentBlock();
 		TetrisBlock nextBlock = session.getCurrentBlockQueue().getLast();
+		if(session.getCurrentBlock() == null)
+			return new MoveGreeting("no change");
 		switch(message.getKeyboardCode()){
 			case 32:
 				
 			case 37:				
-				return moveGreeting(new MoveMessage(-1,0), headerAccessor);
+				return moveBlock(new MoveMessage(-1,0), headerAccessor);
 			case 38:
 				return tetrisMaster.rotationGreeting(currentBlock, nextBlock);
-			case 39:
-				if(currentBlock == null){
-					return new MoveGreeting("no change");
-				}				
-				return moveGreeting(new MoveMessage(1,0), headerAccessor);
+			case 39:				
+				return moveBlock(new MoveMessage(1,0), headerAccessor);
 			case 40:				
-				return moveGreeting(new MoveMessage(0,1), headerAccessor);
+				return moveBlock(new MoveMessage(0,1), headerAccessor);
 			default:
 				return new MoveGreeting("no change");
 		}
@@ -80,28 +79,42 @@ public class SocketController {
 	@MessageMapping("/move")
 
 	@SendToUser
-	public Greeting moveGreeting(@Payload MoveMessage message, SimpMessageHeaderAccessor headerAccessor) {		
-		
+	public synchronized Greeting moveGreeting(@Payload MoveMessage message, SimpMessageHeaderAccessor headerAccessor) {		
 		String sessionId = headerAccessor.getSessionAttributes().get("sessionId").toString();
 		SessionMaster session = sessionMap.get(sessionId);
 		TetrisMaster tetrisMaster = session.getTetrisMaster();
-		ModelMaster modelMaster = session.getModelMaster();		
-		if (session.getCurrentBlock() == null) {
-			session.getCurrentBlockQueue().addLast(session.getModelMaster().createBlock());
-			session.setCurrentBlock(session.getCurrentBlockQueue().removeFirst()); 
-			for(Point point : session.getCurrentBlock().getCurrentPositions()){
-				if(tetrisMaster.checkGrid(point)){
-					tetrisMaster.resetGrid();
-					modelMaster.addScore(hRepo, "bla", tetrisMaster.getScore());
-					tetrisMaster.setScore(0l);
-					return new ResetGreeting("reset");
-				}
-			}
-			TetrisBlock nb = session.getCurrentBlockQueue().getLast();
-			return new MoveGreeting("there was no block", new Point[]{}, session.getCurrentBlock().getCurrentPositions(), 
-					session.getCurrentBlock().getColor(), nb.getOrientations()[nb.getCurrentOrientation()], nb.getColor());
+		ModelMaster modelMaster = session.getModelMaster();
+		if(session.getCurrentBlock() == null){
+			return newBlock(message, headerAccessor);
 		}
-		
+		return moveBlock(message, headerAccessor);
+	}
+	
+	public Greeting newBlock(MoveMessage message, SimpMessageHeaderAccessor headerAccessor){
+		String sessionId = headerAccessor.getSessionAttributes().get("sessionId").toString();
+		SessionMaster session = sessionMap.get(sessionId);
+		TetrisMaster tetrisMaster = session.getTetrisMaster();
+		ModelMaster modelMaster = session.getModelMaster();
+		session.getCurrentBlockQueue().addLast(session.getModelMaster().createBlock());
+		session.setCurrentBlock(session.getCurrentBlockQueue().removeFirst()); 
+		for(Point point : session.getCurrentBlock().getCurrentPositions()){
+			if(tetrisMaster.checkGrid(point)){
+				tetrisMaster.resetGrid();
+				modelMaster.addScore(hRepo, "bla", tetrisMaster.getScore());
+				tetrisMaster.setScore(0l);
+				return new ResetGreeting("reset");
+			}
+		}
+		TetrisBlock nb = session.getCurrentBlockQueue().getLast();
+		return new MoveGreeting("there was no block", new Point[]{}, session.getCurrentBlock().getCurrentPositions(), 
+				session.getCurrentBlock().getColor(), nb.getOrientations()[nb.getCurrentOrientation()], nb.getColor());		
+	}
+	
+	public Greeting moveBlock(MoveMessage message, SimpMessageHeaderAccessor headerAccessor){
+		String sessionId = headerAccessor.getSessionAttributes().get("sessionId").toString();
+		SessionMaster session = sessionMap.get(sessionId);
+		TetrisMaster tetrisMaster = session.getTetrisMaster();
+		ModelMaster modelMaster = session.getModelMaster();
 		Greeting greeting = tetrisMaster.moveGreeting(message, session.getCurrentBlock(), session.getCurrentBlockQueue().getLast());
 		
 		if(greeting == null){
