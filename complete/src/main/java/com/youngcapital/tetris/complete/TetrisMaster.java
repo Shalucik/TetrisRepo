@@ -41,7 +41,7 @@ public class TetrisMaster {
 			}
 			currentBlock.setCurrentOrientation(rotation);
 			currentBlock.setCurrentPositions(newPos);
-			return new MoveGreeting("rotating", curPos, newPos, currentBlock.getColor(), nextBlock.getOrientations()[nextBlock.getCurrentOrientation()], nextBlock.getColor());
+			return new MoveGreeting("rotating", curPos, newPos, currentBlock.getColor());
 		}
 		return new MoveGreeting("");
 	}
@@ -135,8 +135,7 @@ public class TetrisMaster {
 		Point[] newPositions = TetrisMaster.addPointToArray(move, currentPositions);
 		for(int i = 0; i < newPositions.length; i++){
 			if((message.getX() != 0 && checkGrid(newPositions[i]))){
-				return new MoveGreeting("can't move", 
-						nextBlock.getOrientations()[nextBlock.getCurrentOrientation()], nextBlock.getColor());
+				return new MoveGreeting("can't move");
 			}
 			if(newPositions[i].y == grid.length || checkGrid(newPositions[i])){
 				int[] lines = updateGrid(currentPositions);

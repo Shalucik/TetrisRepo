@@ -109,7 +109,7 @@ function updateLine(greeting) {
 }
 
 function showNextBlock(greeting) {
-	if (greeting.nextPositions.length != null && greeting.nextPositions.length > 0) {
+	if (greeting.nextPositions != null && greeting.nextPositions.length > 0) {
 		for (var y = 0; y < 4; y++) {
 			for (var x = 0; x < 4; x++) {
 				$("#next" + y + x).css('background', 'gray');

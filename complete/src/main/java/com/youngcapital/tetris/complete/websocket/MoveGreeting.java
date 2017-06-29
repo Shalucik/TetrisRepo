@@ -38,6 +38,13 @@ public class MoveGreeting extends Greeting{
 		this.nextColor = nextColor;
 		this.color = color;
 	}
+	
+	public MoveGreeting(String comment, Point[] grayPositions, Point[] colorPositions, String color) {
+		this(comment);
+		this.grayPositions = grayPositions;
+		this.colorPositions = colorPositions;
+		this.color = color;
+	}
 
 	public MoveGreeting(String content, Point[] curPos, Point[] newPos, String color, Point[] nextPositions, String nextColor) {
 		this(content);
