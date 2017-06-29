@@ -1,6 +1,8 @@
 var stompClient = null;
 var control = true;
 var move = true;
+var interval;
+var time = 500;
 
 function setConnected(connected) {
 	$("#connect").prop("disabled", connected);
@@ -14,9 +16,8 @@ function connect() {
 	stompClient.connect({}, function(frame) {
 		setConnected(true);
 		console.log('Connected: ' + frame);
-		stompClient.subscribe('/tetris/output', function(greeting) {
-			while (!move) {
-			}
+		stompClient.subscribe('/user/queue/controls', function (greeting) {
+			while(!move){}
 			var update = JSON.parse(greeting.body);
 			switch (update.status) {
 			case 0:
@@ -36,9 +37,8 @@ function connect() {
 				break;
 			}
 		});
-		stompClient.subscribe('/tetris/move', function(greeting) {
-			while (!move) {
-			}
+		stompClient.subscribe('/user/queue/move', function(greeting){
+			while(!move){}
 			var update = JSON.parse(greeting.body);
 			switch (update.status) {
 			case 0:
@@ -58,13 +58,20 @@ function connect() {
 				break;
 			}
 		});
-		loop();
+		var speed = setInterval(function() {
+			clearInterval(interval);
+			time -= 1;
+			loop(time);			
+		}, 1000);
+		
 	});
 }
 
-function resetGrid() {
-	for (var i = 0; i < 20; i++)
-		for (var j = 0; j < 10; j++) {
+function resetGrid(){
+	$("#score").text(0);
+	time = 500;
+	for(var i = 0; i < 20; i++)
+		for(var j = 0; j < 10; j++){
 			$("#" + j + i).css('background', 'gray');
 		}
 }
@@ -94,8 +101,9 @@ function updateBlock(greeting) {
 
 	showNextBlock(greeting);
 }
-
-function updateLine(greeting) {
+				
+function updateLine(greeting){
+	$("#score").text(greeting.score);
 	$.each(greeting.lines, function(key, value) {
 		for (var j = value; j >= 0; j--) {
 			for (var i = 0; i < 10; i++) {
@@ -160,14 +168,15 @@ function showNextBlock(greeting) {
 	}
 }
 
-function loop() {
-	var interval = setInterval(function() {
+function loop(time) {
+	interval = setInterval(function() {
 		stompClient.send("/app/move", {}, JSON.stringify({
 			'x' : 0,
 			'y' : 1
 		}));
-	}, 1000);
+	}, time);	
 }
+
 
 function keyInput(keycode) {
 	if ((keycode >= 37 && keycode <= 40 && control) || keycode == 32) {

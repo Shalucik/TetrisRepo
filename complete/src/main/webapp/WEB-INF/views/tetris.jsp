@@ -18,8 +18,8 @@
 
 <body>
 	<button id="connect" class="btn btn-default" type="submit">Connect</button>
-	<button id="disconnect" class="btn btn-default" type="submit"
-		disabled="disabled">Disconnect</button>
+	<button id="disconnect" class="btn btn-default" type="submit" disabled="disabled">Disconnect</button>
+	<div>Score = <span id="score">0</span></div>
 	<table>
 		<tbody>
 			<c:forEach var="i" begin="0" end="3">
@@ -31,16 +31,14 @@
 			</c:forEach>
 		</tbody>
 	</table>
-	<table>
-		<tbody>
-			<c:forEach var="i" begin="0" end="${gridHeight}">
-				<tr>
-					<c:forEach var="j" begin="0" end="${gridWidth}">
-						<td id="${j}${i}"></td>
-					</c:forEach>
-				</tr>
-			</c:forEach>
-		</tbody>
-	</table>
+	<table><tbody>
+		<c:forEach var="i" begin="0" end="${gridHeight}">
+			<tr>
+				<c:forEach var="j" begin="0" end="${gridWidth}">
+					<td id="${j}${i}"></td>
+				</c:forEach>
+			</tr>
+		</c:forEach>
+	</tbody></table>
 </body>
 </html>
