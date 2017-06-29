@@ -151,8 +151,7 @@ public class TetrisMaster {
 		}
 		currentBlock.setCurrentPosition(TetrisMaster.addPointToPoint(currentBlock.getCurrentPosition(), move));
 		currentBlock.setCurrentPositions(newPositions);
-		return new MoveGreeting("continue", currentPositions, newPositions, currentBlock.getColor(), 
-				nextBlock.getOrientations()[nextBlock.getCurrentOrientation()], nextBlock.getColor());
+		return new MoveGreeting("continue", currentPositions, newPositions, currentBlock.getColor());
 	}
 
 	public Long getScore() {

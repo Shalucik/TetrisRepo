@@ -109,7 +109,7 @@ public class SocketController {
 		if(greeting == null){
 			session.setCurrentBlock(null);
 			TetrisBlock nb = session.getCurrentBlockQueue().getLast();
-			return new MoveGreeting("new block", nb.getOrientations()[nb.getCurrentOrientation()], nb.getColor());
+			return new MoveGreeting("new block");
 		} else if(greeting.getStatus() == 1) {
 			session.setCurrentBlock(null);
 		}
