@@ -151,7 +151,6 @@ public class TetrisMaster {
 		Point smallestDelta = points[0];
 		for (int i = 1; i < points.length; i++) {
 			smallestDelta = (points[i].y < smallestDelta.y ? points[i] : smallestDelta);
-			System.out.println(points[i].x + " " + points[i].y);
 		}
 		
 		return moveGreeting(new MoveMessage(0, smallestDelta.y), currentBlock, nextBlock);
@@ -163,7 +162,6 @@ public class TetrisMaster {
 		Point[] currentPositions = currentBlock.getCurrentPositions();
 		Point[] newPositions = TetrisMaster.addPointToArray(move, currentPositions);
 		for (int i = 0; i < newPositions.length; i++) {
-			System.out.println(newPositions[i].x + " " + newPositions[i].y);
 			if ((message.getX() != 0 && checkGrid(newPositions[i]))) {
 				return new MoveGreeting("can't move");
 			}
