@@ -48,7 +48,7 @@ public class SocketController {
 	public synchronized Greeting controlgreeting(ControlMessage message){
 		switch(message.getKeyboardCode()){
 			case 32:
-				
+				return tetrisMaster.dropBlock(currentBlock, currentBlockQueue.getLast());
 			case 37:
 				return moveGreeting(new MoveMessage(-1,0));
 			case 38:

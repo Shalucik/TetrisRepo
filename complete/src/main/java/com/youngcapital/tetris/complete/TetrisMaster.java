@@ -128,6 +128,11 @@ public class TetrisMaster {
 		return true;
 	}
 	
+	Greeting dropBlock(TetrisBlock currentBlock, TetrisBlock nextBlock) {
+		
+		return null;
+	}
+	
 	Greeting moveGreeting(MoveMessage message, TetrisBlock currentBlock, TetrisBlock nextBlock) {
 		Point move = new Point(message.getX(), message.getY());
 		
