@@ -85,9 +85,7 @@ public class SocketController {
 		String sessionId = headerAccessor.getSessionAttributes().get("sessionId").toString();
 		SessionMaster session = sessionMap.get(sessionId);
 		TetrisMaster tetrisMaster = session.getTetrisMaster();
-		ModelMaster modelMaster = session.getModelMaster();
-		System.out.println("id: "+ sessionId);
-		System.out.println("session: "+ session.getSession().getId());
+		ModelMaster modelMaster = session.getModelMaster();		
 		if (session.getCurrentBlock() == null) {
 			session.getCurrentBlockQueue().addLast(session.getModelMaster().createBlock());
 			session.setCurrentBlock(session.getCurrentBlockQueue().removeFirst()); 
