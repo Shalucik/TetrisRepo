@@ -130,6 +130,33 @@ public class TetrisMaster {
 		return true;
 	}
 
+	Greeting dropBlock(TetrisBlock currentBlock, TetrisBlock nextBlock) {
+		if (currentBlock == null) {
+			return new MoveGreeting("can't move");
+		}
+		Point[] currentPositions = currentBlock.getCurrentPositions();
+		Point[] points = new Point[currentPositions.length];
+		
+		for (int i = 0; i < points.length; i++) {
+			points[i] = new Point(currentPositions[i].x, currentPositions[i].y);
+		}
+		
+		
+		for (int i = 0; i < points.length; i++) {
+			while (points[i].y < gridHeight && !checkGrid(points[i].x, points[i].y)) {
+				points[i].y++;
+			}
+			points[i].y -= (1 + currentPositions[i].y);
+		}
+		
+		Point smallestDelta = points[0];
+		for (int i = 1; i < points.length; i++) {
+			smallestDelta = (points[i].y < smallestDelta.y ? points[i] : smallestDelta);
+		}
+		
+		return moveGreeting(new MoveMessage(0, smallestDelta.y), currentBlock, nextBlock);
+	}
+
 	Greeting moveGreeting(MoveMessage message, TetrisBlock currentBlock, TetrisBlock nextBlock) {
 		Point move = new Point(message.getX(), message.getY());
 
@@ -150,6 +177,7 @@ public class TetrisMaster {
 				return null;
 			}
 		}
+		
 		currentBlock.setCurrentPosition(TetrisMaster.addPointToPoint(currentBlock.getCurrentPosition(), move));
 		currentBlock.setCurrentPositions(newPositions);
 		return new MoveGreeting("continue", currentPositions, newPositions, currentBlock.getColor());

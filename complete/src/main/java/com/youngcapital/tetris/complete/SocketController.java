@@ -61,9 +61,9 @@ public class SocketController {
 			return new MoveGreeting("no change");
 		switch(message.getKeyboardCode()){
 			case 32:
-				
-			case 37:				
-				return moveBlock(new MoveMessage(-1,0), session);
+				return tetrisMaster.dropBlock(currentBlock, session.getCurrentBlockQueue().getLast());
+			case 37:
+				return tetrisMaster.moveGreeting(new MoveMessage(-1,0), currentBlock, nextBlock);
 			case 38:
 				return tetrisMaster.rotationGreeting(currentBlock, nextBlock);
 			case 39:				
