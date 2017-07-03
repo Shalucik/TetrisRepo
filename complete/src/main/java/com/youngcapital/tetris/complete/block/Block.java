@@ -24,7 +24,6 @@ public class Block {
 	private Orientation orientation1;
 	private Orientation orientation2;
 	private Orientation orientation3;
-	private int currentOrientation;
 	private Pos currentPos;
 	
 	public String getColor() {
@@ -77,7 +76,6 @@ public class Block {
 
 
 	@OneToOne(cascade = CascadeType.ALL)
-	//@JoinColumn(name="currentpos_id")
 	public Pos getCurrentPos() {
 		return currentPos;
 	}
@@ -93,12 +91,5 @@ public class Block {
 	public void setBlockType(String blockType) {
 		this.blockType = blockType;
 	}
-
-	public int getCurrentOrientation() {
-		return currentOrientation;
-	}
-
-	public void setCurrentOrientation(int currentOrientation) {
-		this.currentOrientation = currentOrientation;
-	}
+	
 }

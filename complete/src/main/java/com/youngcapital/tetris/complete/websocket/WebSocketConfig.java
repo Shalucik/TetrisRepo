@@ -12,12 +12,13 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer{
 	
 	@Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker("/tetris");
+		config.enableSimpleBroker("/queue", "/tetris");
         config.setApplicationDestinationPrefixes("/app");
+        config.setUserDestinationPrefix("/user");
     }
 	
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
-		registry.addEndpoint("/tetris-websocket").withSockJS();
+		registry.addEndpoint("/tetris-websocket").addInterceptors(new HttpHandshakeInterceptor()).withSockJS();
 	}
 }
