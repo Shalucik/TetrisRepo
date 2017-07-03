@@ -33,10 +33,17 @@
       </div>
       <div class="modal-body">
         Final score: 
+        <div id="highscore">
+				<div class="input-group">
+					<input id="name" type="text" class="form-control"
+						placeholder="name"> <span class="input-group-btn">
+					</span>
+				</div>
+			</div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Submit</button>
+        <button id="scoring" class="btn btn-primary" type="button">Submit</button>
       </div>
     </div>
   </div>
@@ -65,17 +72,6 @@
 			<button id="connect" class="btn btn-default" type="submit">Connect</button>
 			<button id="disconnect" class="btn btn-default" type="submit"
 				disabled="disabled">Disconnect</button>
-			<div id="highscore">
-				<div class="input-group">
-					<input id="name" type="text" class="form-control"
-						placeholder="name"> <span class="input-group-btn">
-						<button id="scoring" class="btn btn-default" type="button">Submit</button>
-					</span>
-				</div>
-
-
-
-			</div>
 			<div>
 				<span id="scoreFont">Score<span id="score">0</span></span>
 			</div>

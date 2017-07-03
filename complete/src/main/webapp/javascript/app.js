@@ -95,7 +95,6 @@ function disconnect() {
 }
 
 function init() {
-	$("#highscore").hide();
 	connect();
 }
 
@@ -208,7 +207,7 @@ function stop(){
 
 function score(){
 	stop();
-	$("#highscore").show();
+	$('#myModal').modal('toggle');
 }
 
 function highscore(){
@@ -216,7 +215,7 @@ function highscore(){
 	stompClient.send("/app/score", {}, JSON.stringify({
 		'name' : $("#name").val()
 	}));
-	$("#highscore").hide();
+	$('#myModal').modal('toggle');
 }
 
 
