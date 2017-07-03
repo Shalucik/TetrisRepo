@@ -1,10 +1,40 @@
 td {
 	background:gray;
-	height:25px;
-	width:25px;
+	height:29px;
+	width:29px;
 	border:solid black 1px;
 }
 
+
 table {
 	border-collapse:collapse;
+}
+
+#interface {
+	width:600px;
+max-width:600px;
+min-width:600px;
+margin: 0 auto;
+margin-left: 32%;
+}
+
+#field {
+	width: 60%;
+	margin: 2.5%;
+}
+
+#score {
+	width: 30%;
+	margin: 2.5%;
+}
+
+#scoreFont {
+	font-size: 150%;
+	line-height:100%;
+	font-weight:600;
+}
+
+.box {
+margin: 20px;
+float: left;
 }

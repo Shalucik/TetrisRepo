@@ -107,7 +107,6 @@ function updateLine(greeting){
 	$.each(greeting.lines, function(key, value) {
 		for (var j = value; j >= 0; j--) {
 			for (var i = 0; i < 10; i++) {
-				$("#" + i + j).css('transition', '1s');
 				$("#" + i + j).css('background',
 						$("#" + i + (j - 1)).css('background-color'));
 				$("#" + i + j).css('transition', 'none');
