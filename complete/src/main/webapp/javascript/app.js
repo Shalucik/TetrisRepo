@@ -1,13 +1,14 @@
 var stompClient = null;
 var control = true;
 var move = true;
-var interval;
-var time = 500;
+var speedInterval;
+var gameInterval;
 
 function setConnected(connected) {
 	$("#connect").prop("disabled", connected);
 	$("#disconnect").prop("disabled", !connected);
 	$("#test").prop("disabled", !connected);
+	$("#start").prop("disabled", !connected);
 }
 
 function connect() {
@@ -31,7 +32,7 @@ function connect() {
 				move = true;
 				break;
 			case 2:
-				resetGrid();
+				stop();
 				control = true;
 				move = true;
 				break;
@@ -52,18 +53,33 @@ function connect() {
 				move = true;
 				break;
 			case 2:
+				stop();
+				control = true;
+				move = true;
+				break;
+			}
+		});
+		stompClient.subscribe('/user/queue/reset', function(greeting){
+			while(!move){}
+			var update = JSON.parse(greeting.body);
+			switch (update.status) {
+			case 0:
+				updateBlock(update);
+				control = true;
+				move = true;
+				break;
+			case 1:
+				updateLine(update);
+				control = true;
+				move = true;
+				break;
+			case 2:
 				resetGrid();
 				control = true;
 				move = true;
 				break;
 			}
 		});
-		var speed = setInterval(function() {
-			clearInterval(interval);
-			time -= 1;
-			loop(time);			
-		}, 1000);
-		
 	});
 }
 
@@ -74,6 +90,11 @@ function resetGrid(){
 		for(var j = 0; j < 10; j++){
 			$("#" + j + i).css('background', 'gray');
 		}
+	for (var y = 0; y < 4; y++) {
+		for (var x = 0; x < 4; x++) {
+			$("#next" + y + x).css('background', 'gray');
+		}
+	}
 }
 
 function disconnect() {
@@ -169,12 +190,31 @@ function showNextBlock(greeting) {
 }
 
 function loop(time) {
-	interval = setInterval(function() {
+	gameInterval = setInterval(function() {
 		stompClient.send("/app/move", {}, JSON.stringify({
 			'x' : 0,
 			'y' : 1
 		}));
 	}, time);	
+}
+
+function start(){
+	var time = 500;
+	$("#start").prop("disabled", true);
+	$("#stop").prop("disabled", false);
+	speedInterval = setInterval(function() {
+		clearInterval(gameInterval);
+		time -= 1;
+		loop(time);			
+	}, 1000);
+}
+
+function stop(){
+	stompClient.send('/app/reset', {}, "");
+	$("#start").prop("disabled", false);
+	$("#stop").prop("disabled", true);
+	clearInterval(gameInterval);
+	clearInterval(speedInterval);
 }
 
 
@@ -196,6 +236,12 @@ $(function() {
 	});
 	$(document).keydown(function(event) {
 		keyInput(event.which);
+	});
+	$("#start").click(function(){
+		start();
+	});
+	$("#stop").click(function(){		
+		stop();
 	});
 	init();
 })

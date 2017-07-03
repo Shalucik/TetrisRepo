@@ -17,6 +17,8 @@
 </head>
 
 <body>
+	<button id="start" class="btn btn-default" type="submit" disabled="disabled">Start</button>
+	<button id="stop" class="btn btn-default" type="submit" disabled="disabled">Stop</button>
 	<button id="connect" class="btn btn-default" type="submit">Connect</button>
 	<button id="disconnect" class="btn btn-default" type="submit" disabled="disabled">Disconnect</button>
 	<div>Score = <span id="score">0</span></div>

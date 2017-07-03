@@ -51,9 +51,8 @@ public class SocketController {
 
 	@MessageMapping("/controls")
 	@SendToUser
-	public synchronized Greeting controlgreeting(ControlMessage message, SimpMessageHeaderAccessor headerAccessor){
-		String sessionId = headerAccessor.getSessionAttributes().get("sessionId").toString();
-		SessionMaster session = sessionMap.get(sessionId);
+	public synchronized Greeting controlgreeting(ControlMessage message, SimpMessageHeaderAccessor headerAccessor){		
+		SessionMaster session = getSessionFromHeader(headerAccessor);
 		TetrisMaster tetrisMaster = session.getTetrisMaster();
 		TetrisBlock currentBlock = session.getCurrentBlock();
 		TetrisBlock nextBlock = session.getCurrentBlockQueue().getLast();
@@ -78,19 +77,33 @@ public class SocketController {
 
 	@MessageMapping("/move")
 	@SendToUser
-	public synchronized Greeting moveGreeting(@Payload MoveMessage message, SimpMessageHeaderAccessor headerAccessor) {		
-		String sessionId = headerAccessor.getSessionAttributes().get("sessionId").toString();
-		SessionMaster session = sessionMap.get(sessionId);		
+	public synchronized Greeting moveGreeting(@Payload MoveMessage message, SimpMessageHeaderAccessor headerAccessor) {				
+		SessionMaster session = getSessionFromHeader(headerAccessor);
 		if(session.getCurrentBlock() == null){
 			return newBlock(message, session);
 		}
 		return moveBlock(message, session);
 	}
 	
+	@MessageMapping("/reset")
+	@SendToUser
+	public Greeting reset(SimpMessageHeaderAccessor headerAccessor){
+		SessionMaster session = getSessionFromHeader(headerAccessor);
+		session.getTetrisMaster().resetGrid();
+		session.setCurrentBlock(null);
+		session.getCurrentBlockQueue().removeFirst();
+		session.getCurrentBlockQueue().addLast(session.getModelMaster().createBlock());;
+		return new ResetGreeting("Reset");
+	}
+	
+	private SessionMaster getSessionFromHeader(SimpMessageHeaderAccessor headerAccessor){
+		return sessionMap.get(headerAccessor.getSessionAttributes().get("sessionId").toString());
+	}
+	
 	public Greeting newBlock(MoveMessage message, SessionMaster session){		
 		TetrisMaster tetrisMaster = session.getTetrisMaster();
 		ModelMaster modelMaster = session.getModelMaster();
-		session.getCurrentBlockQueue().addLast(session.getModelMaster().createBlock());
+		session.getCurrentBlockQueue().addLast(modelMaster.createBlock());
 		session.setCurrentBlock(session.getCurrentBlockQueue().removeFirst()); 
 		for(Point point : session.getCurrentBlock().getCurrentPositions()){
 			if(tetrisMaster.checkGrid(point)){
