@@ -215,7 +215,7 @@ function highscore(){
 	stompClient.send("/app/score", {}, JSON.stringify({
 		'name' : $("#name").val()
 	}));
-	$('#myModal').modal('toggle');
+	$('#myModal').modal('toggle'); 
 }
 
 
