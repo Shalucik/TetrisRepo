@@ -114,6 +114,7 @@ function updateBlock(greeting) {
 				
 function updateLine(greeting){
 	$("#score").text(greeting.score);
+	$("#level").text(greeting.level);
 	$.each(greeting.lines, function(key, value) {
 		for (var j = value; j >= 0; j--) {
 			for (var i = 0; i < 10; i++) {

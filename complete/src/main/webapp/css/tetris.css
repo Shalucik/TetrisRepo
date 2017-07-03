@@ -28,7 +28,7 @@ margin-left: 28%;
 	margin: 2.5%;
 }
 
-#scoreFont {
+.scoreFont {
 	font-size: 150%;
 	line-height:100%;
 	font-weight:600;

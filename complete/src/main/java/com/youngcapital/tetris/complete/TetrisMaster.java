@@ -15,6 +15,7 @@ public class TetrisMaster {
 	private int gridHeight;
 	private boolean[][] grid;
 	private Long score = new Long(0);
+	private int level = 0;
 
 	public TetrisMaster(int gridWidth, int gridHeight) {
 		this.gridHeight = gridHeight;
@@ -136,24 +137,23 @@ public class TetrisMaster {
 		}
 		Point[] currentPositions = currentBlock.getCurrentPositions();
 		Point[] points = new Point[currentPositions.length];
-		
+
 		for (int i = 0; i < points.length; i++) {
 			points[i] = new Point(currentPositions[i].x, currentPositions[i].y);
 		}
-		
-		
+
 		for (int i = 0; i < points.length; i++) {
 			while (points[i].y < gridHeight && !checkGrid(points[i].x, points[i].y)) {
 				points[i].y++;
 			}
 			points[i].y -= (1 + currentPositions[i].y);
 		}
-		
+
 		Point smallestDelta = points[0];
 		for (int i = 1; i < points.length; i++) {
 			smallestDelta = (points[i].y < smallestDelta.y ? points[i] : smallestDelta);
 		}
-		
+
 		return moveGreeting(new MoveMessage(0, smallestDelta.y), currentBlock, nextBlock);
 	}
 
@@ -170,17 +170,36 @@ public class TetrisMaster {
 				int[] lines = updateGrid(currentPositions);
 				if (lines.length > 0) {
 					updateGridAfterLineRemoval(lines);
-					score += lines.length;
-					return new LineGreeting("clearLines", lines, score);
+					score += updateScore(lines.length);
+					return new LineGreeting("clearLines", lines, score, level);
 				}
 
 				return null;
 			}
 		}
-		
+
 		currentBlock.setCurrentPosition(TetrisMaster.addPointToPoint(currentBlock.getCurrentPosition(), move));
 		currentBlock.setCurrentPositions(newPositions);
 		return new MoveGreeting("continue", currentPositions, newPositions, currentBlock.getColor());
+	}
+
+	private int updateScore(int lines) {
+		int scoreIncrease = 0;
+		switch (lines) {
+		case 1:
+			scoreIncrease += (40 * (level + 1));
+			break;
+		case 2:
+			scoreIncrease += (100 * (level + 1));
+			break;
+		case 3:
+			scoreIncrease += (300 * (level + 1));
+			break;
+		case 4:
+			scoreIncrease += (1200 * (level + 1));
+			break;
+		}
+		return scoreIncrease;
 	}
 
 	public Long getScore() {

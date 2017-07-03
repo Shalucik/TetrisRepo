@@ -18,36 +18,39 @@
 <script src="javascript/app.js"></script>
 </head>
 
-<body>	
+<body>
 
 
-<!-- Modal -->
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Game Over</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        Final score: 
-        <div id="highscore">
-				<div class="input-group">
-					<input id="name" type="text" class="form-control"
-						placeholder="name"> <span class="input-group-btn">
-					</span>
+	<!-- Modal -->
+	<div class="modal fade" id="myModal" tabindex="-1" role="dialog"
+		aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalLabel">Game Over</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					Final score:
+					<div id="highscore">
+						<div class="input-group">
+							<input id="name" type="text" class="form-control"
+								placeholder="name"> <span class="input-group-btn">
+							</span>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary"
+						data-dismiss="modal">Close</button>
+					<button id="scoring" class="btn btn-primary" type="button">Submit</button>
 				</div>
 			</div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button id="scoring" class="btn btn-primary" type="button">Submit</button>
-      </div>
-    </div>
-  </div>
-</div>
+		</div>
+	</div>
 
 	<div id="interface">
 		<div class="box field">
@@ -72,9 +75,6 @@
 			<button id="connect" class="btn btn-default" type="submit">Connect</button>
 			<button id="disconnect" class="btn btn-default" type="submit"
 				disabled="disabled">Disconnect</button>
-			<div>
-				<span id="scoreFont">Score<span id="score">0</span></span>
-			</div>
 			<table>
 				<tbody>
 					<c:forEach var="i" begin="0" end="3">
@@ -86,6 +86,12 @@
 					</c:forEach>
 				</tbody>
 			</table>
+			<div>
+				<span class="scoreFont">Score<span id="score">0</span></span>
+			</div>
+					<div>
+				<span class="scoreFont">Level <span id="level">0</span></span>
+			</div>
 		</div>
 	</div>
 
