@@ -24,6 +24,7 @@ import com.youngcapital.tetris.complete.websocket.Greeting;
 import com.youngcapital.tetris.complete.websocket.MoveGreeting;
 import com.youngcapital.tetris.complete.websocket.MoveMessage;
 import com.youngcapital.tetris.complete.websocket.ResetGreeting;
+import com.youngcapital.tetris.complete.websocket.ScoreMessage;
 
 @Controller
 public class SocketController {
@@ -96,6 +97,14 @@ public class SocketController {
 		return new ResetGreeting("Reset");
 	}
 	
+	@MessageMapping("/score")
+	public void score(@Payload ScoreMessage message, SimpMessageHeaderAccessor headerAccessor){
+		SessionMaster session = getSessionFromHeader(headerAccessor);
+		session.getModelMaster().addScore(hRepo, message.getName(), session.getTetrisMaster().getScore());
+		session.getTetrisMaster().setScore(0l);
+		
+	}
+	
 	private SessionMaster getSessionFromHeader(SimpMessageHeaderAccessor headerAccessor){
 		return sessionMap.get(headerAccessor.getSessionAttributes().get("sessionId").toString());
 	}
@@ -107,9 +116,7 @@ public class SocketController {
 		session.setCurrentBlock(session.getCurrentBlockQueue().removeFirst()); 
 		for(Point point : session.getCurrentBlock().getCurrentPositions()){
 			if(tetrisMaster.checkGrid(point)){
-				tetrisMaster.resetGrid();
-				modelMaster.addScore(hRepo, "bla", tetrisMaster.getScore());
-				tetrisMaster.setScore(0l);
+				tetrisMaster.resetGrid();								
 				return new ResetGreeting("reset");
 			}
 		}

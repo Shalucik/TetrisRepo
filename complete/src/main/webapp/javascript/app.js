@@ -31,8 +31,7 @@ function connect() {
 				control = true;
 				move = true;
 				break;
-			case 2:
-				stop();
+			case 2:				
 				control = true;
 				move = true;
 				break;
@@ -52,8 +51,8 @@ function connect() {
 				control = true;
 				move = true;
 				break;
-			case 2:
-				stop();
+			case 2:				
+				score();
 				control = true;
 				move = true;
 				break;
@@ -63,16 +62,6 @@ function connect() {
 			while(!move){}
 			var update = JSON.parse(greeting.body);
 			switch (update.status) {
-			case 0:
-				updateBlock(update);
-				control = true;
-				move = true;
-				break;
-			case 1:
-				updateLine(update);
-				control = true;
-				move = true;
-				break;
 			case 2:
 				resetGrid();
 				control = true;
@@ -106,6 +95,7 @@ function disconnect() {
 }
 
 function init() {
+	$("#highscore").hide();
 	connect();
 }
 
@@ -217,6 +207,19 @@ function stop(){
 	clearInterval(speedInterval);
 }
 
+function score(){
+	stop();
+	$("#highscore").show();
+}
+
+function highscore(){
+	
+	stompClient.send("/app/score", {}, JSON.stringify({
+		'name' : $("#name").val()
+	}));
+	$("#highscore").hide();
+}
+
 
 function keyInput(keycode) {
 	if ((keycode >= 37 && keycode <= 40 && control) || keycode == 32) {
@@ -242,6 +245,9 @@ $(function() {
 	});
 	$("#stop").click(function(){		
 		stop();
+	});
+	$("#scoring").click(function(){
+		highscore();
 	});
 	init();
 })

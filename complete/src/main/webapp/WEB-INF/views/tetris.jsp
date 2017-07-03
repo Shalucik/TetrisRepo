@@ -21,6 +21,14 @@
 	<button id="stop" class="btn btn-default" type="submit" disabled="disabled">Stop</button>
 	<button id="connect" class="btn btn-default" type="submit">Connect</button>
 	<button id="disconnect" class="btn btn-default" type="submit" disabled="disabled">Disconnect</button>
+	<div id="highscore">
+	<div class="input-group">		
+		<input id="name" type="text" class="form-control" placeholder="name">
+		<span class="input-group-btn">
+			<button id="scoring" class="btn btn-default" type="button">Submit</button>
+		</span>
+	</div>
+	</div>
 	<div>Score = <span id="score">0</span></div>
 	<table>
 		<tbody>
