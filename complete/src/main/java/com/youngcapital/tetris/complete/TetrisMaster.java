@@ -16,6 +16,8 @@ public class TetrisMaster {
 	private boolean[][] grid;
 	private Long score = new Long(0);
 	private int level = 0;
+	private int linesThisLevel = 0;
+	private final int LINESPERLEVEL = 8;
 
 	public TetrisMaster(int gridWidth, int gridHeight) {
 		this.gridHeight = gridHeight;
@@ -170,7 +172,16 @@ public class TetrisMaster {
 				int[] lines = updateGrid(currentPositions);
 				if (lines.length > 0) {
 					updateGridAfterLineRemoval(lines);
+					
 					score += updateScore(lines.length);
+					
+					linesThisLevel += lines.length;
+					
+					if (linesThisLevel >= LINESPERLEVEL) {
+						linesThisLevel -= LINESPERLEVEL;
+						level++;
+					}
+					
 					return new LineGreeting("clearLines", lines, score, level);
 				}
 

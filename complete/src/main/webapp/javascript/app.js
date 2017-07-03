@@ -1,8 +1,9 @@
 var stompClient = null;
 var control = true;
 var move = true;
-var speedInterval;
 var gameInterval;
+var time = 500;
+var updated = false;
 
 function setConnected(connected) {
 	$("#connect").prop("disabled", connected);
@@ -17,8 +18,9 @@ function connect() {
 	stompClient.connect({}, function(frame) {
 		setConnected(true);
 		console.log('Connected: ' + frame);
-		stompClient.subscribe('/user/queue/controls', function (greeting) {
-			while(!move){}
+		stompClient.subscribe('/user/queue/controls', function(greeting) {
+			while (!move) {
+			}
 			var update = JSON.parse(greeting.body);
 			switch (update.status) {
 			case 0:
@@ -31,14 +33,15 @@ function connect() {
 				control = true;
 				move = true;
 				break;
-			case 2:				
+			case 2:
 				control = true;
 				move = true;
 				break;
 			}
 		});
-		stompClient.subscribe('/user/queue/move', function(greeting){
-			while(!move){}
+		stompClient.subscribe('/user/queue/move', function(greeting) {
+			while (!move) {
+			}
 			var update = JSON.parse(greeting.body);
 			switch (update.status) {
 			case 0:
@@ -51,15 +54,16 @@ function connect() {
 				control = true;
 				move = true;
 				break;
-			case 2:				
+			case 2:
 				score();
 				control = true;
 				move = true;
 				break;
 			}
 		});
-		stompClient.subscribe('/user/queue/reset', function(greeting){
-			while(!move){}
+		stompClient.subscribe('/user/queue/reset', function(greeting) {
+			while (!move) {
+			}
 			var update = JSON.parse(greeting.body);
 			switch (update.status) {
 			case 2:
@@ -72,11 +76,11 @@ function connect() {
 	});
 }
 
-function resetGrid(){
+function resetGrid() {
 	$("#score").text(0);
 	time = 500;
-	for(var i = 0; i < 20; i++)
-		for(var j = 0; j < 10; j++){
+	for (var i = 0; i < 20; i++)
+		for (var j = 0; j < 10; j++) {
 			$("#" + j + i).css('background', 'gray');
 		}
 	for (var y = 0; y < 4; y++) {
@@ -111,10 +115,11 @@ function updateBlock(greeting) {
 
 	showNextBlock(greeting);
 }
-				
-function updateLine(greeting){
+
+function updateLine(greeting) {
 	$("#score").text(greeting.score);
 	$("#level").text(greeting.level);
+	
 	$.each(greeting.lines, function(key, value) {
 		for (var j = value; j >= 0; j--) {
 			for (var i = 0; i < 10; i++) {
@@ -124,6 +129,20 @@ function updateLine(greeting){
 			}
 		}
 	});
+	updated = true;
+	adjustLevel(greeting.level);
+}
+
+function adjustLevel(lvl) {
+	if (lvl < 25) {
+		time = 500 - ((lvl + 1) * 20);	
+	} else {
+		time = 10;
+	}
+	
+	
+	clearInterval(gameInterval);
+	gameInterval = setInterval(loop, time);
 }
 
 function showNextBlock(greeting) {
@@ -163,7 +182,7 @@ function showNextBlock(greeting) {
 				increaseY = false;
 			}
 		});
-		
+
 		if (increaseX) {
 			lowestX++;
 		}
@@ -178,47 +197,49 @@ function showNextBlock(greeting) {
 	}
 }
 
-function loop(time) {
-	gameInterval = setInterval(function() {
-		stompClient.send("/app/move", {}, JSON.stringify({
-			'x' : 0,
-			'y' : 1
-		}));
-	}, time);	
+function loop() {
+	if (updated) {
+		updated = false;
+		return;
+	}
+	stompClient.send("/app/move", {}, JSON.stringify({
+		'x' : 0,
+		'y' : 1
+	}));
 }
 
-function start(){
-	var time = 500;
+function start() {
 	$("#start").prop("disabled", true);
 	$("#stop").prop("disabled", false);
-	speedInterval = setInterval(function() {
+	
+	if(gameInterval) {
 		clearInterval(gameInterval);
-		time -= 1;
-		loop(time);			
-	}, 1000);
+		gameInterval = 0;
+	} else {
+		gameInterval = setInterval(loop, time);
+	}
 }
 
-function stop(){
+function stop() {
 	stompClient.send('/app/reset', {}, "");
 	$("#start").prop("disabled", false);
 	$("#stop").prop("disabled", true);
 	clearInterval(gameInterval);
-	clearInterval(speedInterval);
+	gameInterval = 0;
 }
 
-function score(){
+function score() {
 	stop();
 	$('#myModal').modal('toggle');
 }
 
-function highscore(){
-	
+function highscore() {
+
 	stompClient.send("/app/score", {}, JSON.stringify({
 		'name' : $("#name").val()
 	}));
-	$('#myModal').modal('toggle'); 
+	$('#myModal').modal('toggle');
 }
-
 
 function keyInput(keycode) {
 	if ((keycode >= 37 && keycode <= 40 && control) || keycode == 32) {
@@ -239,13 +260,13 @@ $(function() {
 	$(document).keydown(function(event) {
 		keyInput(event.which);
 	});
-	$("#start").click(function(){
+	$("#start").click(function() {
 		start();
 	});
-	$("#stop").click(function(){		
+	$("#stop").click(function() {
 		stop();
 	});
-	$("#scoring").click(function(){
+	$("#scoring").click(function() {
 		highscore();
 	});
 	init();
