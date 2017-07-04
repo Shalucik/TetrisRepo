@@ -66,7 +66,7 @@
 				<div class="modal-body">
 					<div id="highscores">
 						<table id="highscoreTable" class="table"><tbody>
-							<tr><th>Name</th><th>Level</th><th>Score</th></tr>
+							<tr><th>Position</th><th>Name</th><th>Level</th><th>Score</th></tr>
 						</tbody></table>
 					</div>
 				</div>

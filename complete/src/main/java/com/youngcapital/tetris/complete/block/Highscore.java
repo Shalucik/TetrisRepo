@@ -50,6 +50,6 @@ public class Highscore implements Comparable<Highscore>{
 
 	@Override
 	public int compareTo(Highscore score) {		
-		return (int) ((score.score + score.level)-(this.score + this.level));
+		return (int) ((score.score - score.level)-(this.score - this.level));
 	}
 }
