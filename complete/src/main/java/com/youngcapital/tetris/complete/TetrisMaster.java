@@ -220,4 +220,12 @@ public class TetrisMaster {
 	public void setScore(Long score) {
 		this.score = score;
 	}
+
+	public int getLevel() {
+		return level;
+	}
+
+	public void setLevel(int level) {
+		this.level = level;
+	}
 }

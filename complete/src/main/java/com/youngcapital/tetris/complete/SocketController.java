@@ -21,6 +21,7 @@ import com.youngcapital.tetris.complete.block.HighscoreRepository;
 import com.youngcapital.tetris.complete.block.TetrisBlock;
 import com.youngcapital.tetris.complete.websocket.ControlMessage;
 import com.youngcapital.tetris.complete.websocket.Greeting;
+import com.youngcapital.tetris.complete.websocket.HighscoreGreeting;
 import com.youngcapital.tetris.complete.websocket.MoveGreeting;
 import com.youngcapital.tetris.complete.websocket.MoveMessage;
 import com.youngcapital.tetris.complete.websocket.ResetGreeting;
@@ -99,14 +100,21 @@ public class SocketController {
 	
 	@MessageMapping("/score")
 	public void score(@Payload ScoreMessage message, SimpMessageHeaderAccessor headerAccessor){
-		SessionMaster session = getSessionFromHeader(headerAccessor);
-		session.getModelMaster().addScore(hRepo, message.getName(), session.getTetrisMaster().getScore());
-		session.getTetrisMaster().setScore(0l);
+		SessionMaster session = getSessionFromHeader(headerAccessor);		
+		session.getModelMaster().addScore(hRepo, message.getName(), session.getTetrisMaster().getScore(), session.getTetrisMaster().getLevel());
+		session.getTetrisMaster().setScore(0l);		
 		
 	}
 	
 	private SessionMaster getSessionFromHeader(SimpMessageHeaderAccessor headerAccessor){
 		return sessionMap.get(headerAccessor.getSessionAttributes().get("sessionId").toString());
+	}
+	
+	@MessageMapping("highscore")
+	@SendToUser
+	public Greeting highscoreSocket(SimpMessageHeaderAccessor headerAccessor){
+		SessionMaster session = getSessionFromHeader(headerAccessor);		
+		return new HighscoreGreeting("highscores", session.getModelMaster().getScores(hRepo));
 	}
 	
 	public Greeting newBlock(MoveMessage message, SessionMaster session){		

@@ -64,7 +64,11 @@
 					</button>
 				</div>
 				<div class="modal-body">
-					Hello
+					<div id="highscores">
+						<table id="highscoreTable" class="table"><tbody>
+							<tr><th>Name</th><th>Level</th><th>Score</th></tr>
+						</tbody></table>
+					</div>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -76,12 +80,12 @@
 	
 	<div id="interface">
 		<div class="box field">
-			<table>
+			<table class="myTable">
 				<tbody>
 					<c:forEach var="i" begin="0" end="${gridHeight}">
 						<tr>
 							<c:forEach var="j" begin="0" end="${gridWidth}">
-								<td id="${j}${i}"></td>
+								<td class="mytd" id="${j}${i}"></td>
 							</c:forEach>
 						</tr>
 					</c:forEach>
@@ -90,12 +94,12 @@
 		</div>
 
 		<div class="box score">			
-			<table>
+			<table class="myTable">
 				<tbody>
 					<c:forEach var="i" begin="0" end="3">
 						<tr>
 							<c:forEach var="j" begin="0" end="3">
-								<td id="next${j}${i}"></td>
+								<td class="mytd" id="next${j}${i}"></td>
 							</c:forEach>
 						</tr>
 					</c:forEach>
@@ -114,7 +118,7 @@
 			<div><button id="connect" class="btn btn-default" type="submit">Connect</button></div>
 			<div><button id="disconnect" class="btn btn-default" type="submit"
 				disabled="disabled">Disconnect</button></div>
-			<div><button id="highscores" class="btn btn-default" type="submit">Highscores</button></div>
+			<div><button id="highscoreButton" class="btn btn-default" type="submit">Highscores</button></div>
 		</div>
 	</div>
 

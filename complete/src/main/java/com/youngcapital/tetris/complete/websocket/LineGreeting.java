@@ -4,7 +4,7 @@ public class LineGreeting extends Greeting {
 	
 	private int[] lines;
 	private long score;
-	private int level;
+	private int level;	
 
 	public LineGreeting(String content) {
 		super(content, 1);

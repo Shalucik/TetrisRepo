@@ -6,9 +6,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 @Entity
-public class Highscore {
+public class Highscore implements Comparable<Highscore>{
 	
 	private Long id;
+	private int level;
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
@@ -38,5 +39,17 @@ public class Highscore {
 	public void setScore(Long score) {
 		this.score = score;
 	}
-	
+
+	public int getLevel() {
+		return level;
+	}
+
+	public void setLevel(int level) {
+		this.level = level;
+	}
+
+	@Override
+	public int compareTo(Highscore score) {		
+		return (int) ((score.score + score.level)-(this.score + this.level));
+	}
 }

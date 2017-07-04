@@ -72,6 +72,13 @@ function connect() {
 				break;
 			}
 		});
+		stompClient.subscribe('/user/queue/highscore', function(greeting){
+			$(".highscoreRow").remove();
+			var scores = JSON.parse(greeting.body).scores;
+			for(var i = 0; i < scores.length; i++){
+				$('#highscoreTable tr:last').after('<tr class="highscoreRow"><td>' + scores[i].name + '</td><td>' + scores[i].level + '</td><td>' + scores[i].score + '</td></tr>')
+			}
+		});
 	});
 }
 
@@ -259,8 +266,9 @@ $(function() {
 	$("#scoring").click(function() {
 		highscore();
 	});
-	$("#highscores").click(function() {
+	$("#highscoreButton").click(function() {
 		$("#highscoreModal").modal('toggle');
+		stompClient.send("/app/highscore", {}, "");
 	});
 	init();
 })

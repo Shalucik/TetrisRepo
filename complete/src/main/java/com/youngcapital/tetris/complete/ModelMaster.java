@@ -1,6 +1,7 @@
 package com.youngcapital.tetris.complete;
 
 import java.awt.Point;
+import java.util.Arrays;
 import java.util.List;
 
 import com.youngcapital.tetris.complete.block.Block;
@@ -78,12 +79,27 @@ public class ModelMaster {
 		return list == null ? null : list.get(0);
 	}
 	
-	public boolean addScore(HighscoreRepository hRepo, String name, Long score){
+	public boolean addScore(HighscoreRepository hRepo, String name, Long score, int level){
 		Highscore highScore = new Highscore();
 		highScore.setName(name);
 		highScore.setScore(score);
+		highScore.setLevel(level);
 		hRepo.save(highScore);
 		return true;
+	}
+	
+	public Highscore[] getScores(HighscoreRepository hRepo){
+		int count = (int) hRepo.count();
+		Highscore[] scores = new Highscore[count];
+		int i = 0;
+		Iterable<Highscore> highscores = hRepo.findAll(); 
+		for(Highscore score: highscores){
+			scores[i] = score;
+			i++;
+		}
+		
+		Arrays.sort(scores);
+		return scores;
 	}
 	
 	public String makeDB() {

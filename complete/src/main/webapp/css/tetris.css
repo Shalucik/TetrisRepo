@@ -1,4 +1,4 @@
-td {
+.mytd {
 	background:gray;
 	height:29px;
 	width:29px;
@@ -6,7 +6,7 @@ td {
 }
 
 
-table {
+.myTable {
 	border-collapse:collapse;
 }
 
