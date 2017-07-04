@@ -80,8 +80,7 @@ public class SocketController {
 	@MessageMapping("/move")
 	@SendToUser
 	public synchronized Greeting moveGreeting(@Payload MoveMessage message, SimpMessageHeaderAccessor headerAccessor) {		
-		SessionMaster session = getSessionFromHeader(headerAccessor);
-		System.out.println(session.getTetrisMaster().getScore());
+		SessionMaster session = getSessionFromHeader(headerAccessor);		
 		if(session.getCurrentBlock() == null){
 			return newBlock(message, session);
 		}
