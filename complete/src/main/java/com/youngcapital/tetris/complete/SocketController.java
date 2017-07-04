@@ -79,8 +79,9 @@ public class SocketController {
 
 	@MessageMapping("/move")
 	@SendToUser
-	public synchronized Greeting moveGreeting(@Payload MoveMessage message, SimpMessageHeaderAccessor headerAccessor) {				
+	public synchronized Greeting moveGreeting(@Payload MoveMessage message, SimpMessageHeaderAccessor headerAccessor) {		
 		SessionMaster session = getSessionFromHeader(headerAccessor);
+		System.out.println(session.getTetrisMaster().getScore());
 		if(session.getCurrentBlock() == null){
 			return newBlock(message, session);
 		}
@@ -95,16 +96,15 @@ public class SocketController {
 		session.setCurrentBlock(null);
 		session.getCurrentBlockQueue().removeFirst();
 		session.getCurrentBlockQueue().addLast(session.getModelMaster().createBlock());;
+		session.getTetrisMaster().setScore(0l);
+		session.getTetrisMaster().setLevel(0);
 		return new ResetGreeting("Reset");
 	}
 	
 	@MessageMapping("/score")
 	public void score(@Payload ScoreMessage message, SimpMessageHeaderAccessor headerAccessor){
 		SessionMaster session = getSessionFromHeader(headerAccessor);		
-		session.getModelMaster().addScore(hRepo, message.getName(), session.getTetrisMaster().getScore(), session.getTetrisMaster().getLevel());
-		session.getTetrisMaster().setScore(0l);
-		session.getTetrisMaster().setLevel(0);
-		
+		session.getModelMaster().addScore(hRepo, message.getName(), session.getTetrisMaster().getScore(), session.getTetrisMaster().getLevel());		
 	}
 	
 	private SessionMaster getSessionFromHeader(SimpMessageHeaderAccessor headerAccessor){
@@ -125,7 +125,8 @@ public class SocketController {
 		session.setCurrentBlock(session.getCurrentBlockQueue().removeFirst()); 
 		for(Point point : session.getCurrentBlock().getCurrentPositions()){
 			if(tetrisMaster.checkGrid(point)){
-				tetrisMaster.resetGrid();								
+				tetrisMaster.resetGrid();
+				session.setCurrentBlock(null);
 				return new ResetGreeting("reset");
 			}
 		}

@@ -3,6 +3,7 @@ var control = true;
 var move = true;
 var gameInterval;
 var time = 500;
+var lines = 0;
 
 function setConnected(connected) {
 	$("#connect").prop("disabled", connected);
@@ -33,6 +34,7 @@ function connect() {
 				move = true;
 				break;
 			case 2:
+				score();
 				control = true;
 				move = true;
 				break;
@@ -83,8 +85,10 @@ function connect() {
 }
 
 function resetGrid() {
-	$("#score").text(0);
-	$("#level").text(0);
+	$(".Score").text(0);
+	$(".Level").text(0);
+	lines = 0;
+	$(".Lines").text(lines);
 	time = 500;
 	for (var i = 0; i < 20; i++)
 		for (var j = 0; j < 10; j++) {
@@ -124,8 +128,10 @@ function updateBlock(greeting) {
 }
 
 function updateLine(greeting) {
-	$("#score").text(greeting.score);
-	$("#level").text(greeting.level);
+	$(".Score").text(greeting.score);
+	$(".Level").text(greeting.level);
+	lines += greeting.lines.length;
+	$(".Lines").text(lines);
 	
 	$.each(greeting.lines, function(key, value) {
 		for (var j = value; j >= 0; j--) {
@@ -206,6 +212,7 @@ function loop() {
 }
 
 function start() {
+	stompClient.send('/app/reset', {}, "");
 	$("#start").prop("disabled", true);
 	$("#stop").prop("disabled", false);
 	
@@ -218,7 +225,6 @@ function start() {
 }
 
 function stop() {
-	stompClient.send('/app/reset', {}, "");
 	$("#start").prop("disabled", false);
 	$("#stop").prop("disabled", true);
 	clearInterval(gameInterval);
@@ -266,9 +272,9 @@ $(function() {
 	$("#scoring").click(function() {
 		highscore();
 	});
-	$("#highscoreButton").click(function() {
+	$("#highscoreButton").click(function () {
+		stompClient.send("/app/highscore", {} ,"");
 		$("#highscoreModal").modal('toggle');
-		stompClient.send("/app/highscore", {}, "");
 	});
 	init();
 })

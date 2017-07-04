@@ -33,8 +33,10 @@
 						<span aria-hidden="true">&times;</span>
 					</button>
 				</div>
-				<div class="modal-body">
-					Final score:
+				<div class="modal-body">					
+					<div>Final score: <span class="Score">0</span></div>
+					<div>Final level: <span class="Level">0</span></div>
+					<div>Total Number of lines: <span class="Lines">0</span></div>
 					<div id="highscore">
 						<div class="input-group">
 							<input id="name" type="text" class="form-control"
@@ -106,18 +108,16 @@
 				</tbody>
 			</table>
 			<div>
-				<span class="scoreFont">Score<span id="score">0</span></span>
+				<span class="scoreFont">Score: <span class="Score">0</span></span>
 			</div>
 					<div>
-				<span class="scoreFont">Level <span id="level">0</span></span>
+				<span class="scoreFont">Level: <span class="Level">0</span></span>
 			</div>
+			<div><span class="scoreFont">Lines: <span class="Lines">0</span></span></div>
 			<div><button id="start" class="btn btn-default" type="submit"
 				disabled="disabled">Start</button></div>
 			<div><button id="stop" class="btn btn-default" type="submit"
 				disabled="disabled">Stop</button></div>
-			<div><button id="connect" class="btn btn-default" type="submit">Connect</button></div>
-			<div><button id="disconnect" class="btn btn-default" type="submit"
-				disabled="disabled">Disconnect</button></div>
 			<div><button id="highscoreButton" class="btn btn-default" type="submit">Highscores</button></div>
 		</div>
 	</div>
