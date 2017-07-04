@@ -16,11 +16,12 @@
 <script src="javascript/tether.min.js"></script>
 <script src="javascript/bootstrap.js"></script>
 <script src="javascript/app.js"></script>
+
 </head>
 
 <body>
 
-
+	<audio src="sound/Tetris.mp3" autoplay loop></audio>
 	<!-- Scoring Modal -->
 	<div class="modal fade" id="myModal" tabindex="-1" role="dialog"
 		aria-labelledby="exampleModalLabel" aria-hidden="true">
