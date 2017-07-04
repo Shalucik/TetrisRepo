@@ -37,7 +37,12 @@ public class TetrisMaster {
 				rotation = max - 1;
 			else if (rotation >= max)
 				rotation = 0;
-			Point[] curPos = currentBlock.getCurrentPositions();
+			
+			ArrayList<Point> emptyPositions = getFreePositions();
+			for (Point p: currentBlock.getCurrentPositions()) {
+				emptyPositions.add(p);
+			}
+			Point[] curPos = emptyPositions.toArray(new Point[0]);
 			Point[] newPos = addPointToArray(currentBlock.getCurrentPosition(),
 					currentBlock.getOrientations()[rotation]);
 			for (Point pos : newPos) {
@@ -49,6 +54,18 @@ public class TetrisMaster {
 			return new MoveGreeting("rotating", curPos, newPos, currentBlock.getColor());
 		}
 		return new MoveGreeting("");
+	}
+	
+	ArrayList<Point> getFreePositions() {
+		ArrayList<Point> points = new ArrayList<Point>();
+		for (int y = 0; y < gridHeight; y++) {
+			for (int x = 0; x < gridWidth; x++) {
+				if (!checkGrid(x, y)) 
+						points.add(new Point(x, y));
+			}
+		}
+		
+		return points;
 	}
 
 	static Point[] addPointToArray(Point point, Point[] array) {
@@ -162,14 +179,20 @@ public class TetrisMaster {
 	Greeting moveGreeting(MoveMessage message, TetrisBlock currentBlock, TetrisBlock nextBlock) {
 		Point move = new Point(message.getX(), message.getY());
 
-		Point[] currentPositions = currentBlock.getCurrentPositions();
-		Point[] newPositions = TetrisMaster.addPointToArray(move, currentPositions);
+		ArrayList<Point> emptyPositions = getFreePositions();
+		Point[] temp = currentBlock.getCurrentPositions();
+		for (Point p: temp) {
+			emptyPositions.add(p);
+		}
+		Point[] currentPositions = emptyPositions.toArray(new Point[0]);
+		Point[] newPositions = TetrisMaster.addPointToArray(move, currentBlock.getCurrentPositions());
+		System.out.println(newPositions.length);
 		for (int i = 0; i < newPositions.length; i++) {
 			if ((message.getX() != 0 && checkGrid(newPositions[i]))) {
 				return new MoveGreeting("can't move");
 			}
 			if (newPositions[i].y == grid.length || checkGrid(newPositions[i])) {
-				int[] lines = updateGrid(currentPositions);
+				int[] lines = updateGrid(currentBlock.getCurrentPositions());
 				if (lines.length > 0) {
 					updateGridAfterLineRemoval(lines);
 					
