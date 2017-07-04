@@ -21,7 +21,7 @@
 <body>
 
 
-	<!-- Modal -->
+	<!-- Scoring Modal -->
 	<div class="modal fade" id="myModal" tabindex="-1" role="dialog"
 		aria-labelledby="exampleModalLabel" aria-hidden="true">
 		<div class="modal-dialog" role="document">
@@ -51,7 +51,29 @@
 			</div>
 		</div>
 	</div>
-
+	
+	<!-- Highscore Modal -->
+	<div class="modal fade" id="highscoreModal" tabindex="-1" role="dialog"
+		aria-labbeledby="HighscoreModalLabel" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="HighscoreModalLabel">High Scores</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					Hello
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	
 	<div id="interface">
 		<div class="box field">
 			<table>
@@ -67,14 +89,7 @@
 			</table>
 		</div>
 
-		<div class="box score">
-			<button id="start" class="btn btn-default" type="submit"
-				disabled="disabled">Start</button>
-			<button id="stop" class="btn btn-default" type="submit"
-				disabled="disabled">Stop</button>
-			<button id="connect" class="btn btn-default" type="submit">Connect</button>
-			<button id="disconnect" class="btn btn-default" type="submit"
-				disabled="disabled">Disconnect</button>
+		<div class="box score">			
 			<table>
 				<tbody>
 					<c:forEach var="i" begin="0" end="3">
@@ -92,6 +107,14 @@
 					<div>
 				<span class="scoreFont">Level <span id="level">0</span></span>
 			</div>
+			<div><button id="start" class="btn btn-default" type="submit"
+				disabled="disabled">Start</button></div>
+			<div><button id="stop" class="btn btn-default" type="submit"
+				disabled="disabled">Stop</button></div>
+			<div><button id="connect" class="btn btn-default" type="submit">Connect</button></div>
+			<div><button id="disconnect" class="btn btn-default" type="submit"
+				disabled="disabled">Disconnect</button></div>
+			<div><button id="highscores" class="btn btn-default" type="submit">Highscores</button></div>
 		</div>
 	</div>
 

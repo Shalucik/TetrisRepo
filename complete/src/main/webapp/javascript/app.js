@@ -77,6 +77,7 @@ function connect() {
 
 function resetGrid() {
 	$("#score").text(0);
+	$("#level").text(0);
 	time = 500;
 	for (var i = 0; i < 20; i++)
 		for (var j = 0; j < 10; j++) {
@@ -257,6 +258,9 @@ $(function() {
 	});
 	$("#scoring").click(function() {
 		highscore();
+	});
+	$("#highscores").click(function() {
+		$("#highscoreModal").modal('toggle');
 	});
 	init();
 })
