@@ -102,7 +102,8 @@ public class SocketController {
 	public void score(@Payload ScoreMessage message, SimpMessageHeaderAccessor headerAccessor){
 		SessionMaster session = getSessionFromHeader(headerAccessor);		
 		session.getModelMaster().addScore(hRepo, message.getName(), session.getTetrisMaster().getScore(), session.getTetrisMaster().getLevel());
-		session.getTetrisMaster().setScore(0l);		
+		session.getTetrisMaster().setScore(0l);
+		session.getTetrisMaster().setLevel(0);
 		
 	}
 	

@@ -140,7 +140,7 @@ function updateLine(greeting) {
 }
 
 function adjustLevel(lvl) {
-		time = 500 * Math.pow(0.9, lvl + 1);		
+		time = 500 * Math.pow(0.9, lvl);		
 	
 	clearInterval(gameInterval);
 	gameInterval = setInterval(loop, time);
