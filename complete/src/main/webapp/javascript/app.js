@@ -3,7 +3,6 @@ var control = true;
 var move = true;
 var gameInterval;
 var time = 500;
-var updated = false;
 
 function setConnected(connected) {
 	$("#connect").prop("disabled", connected);
@@ -129,17 +128,11 @@ function updateLine(greeting) {
 			}
 		}
 	});
-	updated = true;
 	adjustLevel(greeting.level);
 }
 
 function adjustLevel(lvl) {
-	if (lvl < 25) {
-		time = 500 - ((lvl + 1) * 20);	
-	} else {
-		time = 10;
-	}
-	
+		time = 500 * Math.pow(0.9, lvl + 1);		
 	
 	clearInterval(gameInterval);
 	gameInterval = setInterval(loop, time);
@@ -198,10 +191,6 @@ function showNextBlock(greeting) {
 }
 
 function loop() {
-	if (updated) {
-		updated = false;
-		return;
-	}
 	stompClient.send("/app/move", {}, JSON.stringify({
 		'x' : 0,
 		'y' : 1
