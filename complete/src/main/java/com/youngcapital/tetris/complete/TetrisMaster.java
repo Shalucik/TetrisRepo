@@ -76,7 +76,7 @@ public class TetrisMaster {
 					
 					linesThisLevel += lines.length;
 					
-					while (linesThisLevel >= LINESPERLEVEL) {
+					if (linesThisLevel >= LINESPERLEVEL) {
 						linesThisLevel -= LINESPERLEVEL;
 						level++;
 					}
