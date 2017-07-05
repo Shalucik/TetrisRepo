@@ -9,7 +9,6 @@ import javax.persistence.Id;
 public class Highscore implements Comparable<Highscore>{
 	
 	private Long id;
-	private int level;
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
@@ -22,7 +21,8 @@ public class Highscore implements Comparable<Highscore>{
 	}
 
 	private String name;
-	private Long score;
+	private int score;
+	private int level;
 
 	public String getName() {
 		return name;
@@ -32,11 +32,11 @@ public class Highscore implements Comparable<Highscore>{
 		this.name = name;
 	}
 	
-	public Long getScore() {
+	public int getScore() {
 		return score;
 	}
 	
-	public void setScore(Long score) {
+	public void setScore(int score) {
 		this.score = score;
 	}
 
@@ -50,6 +50,6 @@ public class Highscore implements Comparable<Highscore>{
 
 	@Override
 	public int compareTo(Highscore score) {		
-		return (int) ((score.score - score.level)-(this.score - this.level));
+		return (score.score - score.level)-(this.score - this.level);
 	}
 }

@@ -13,14 +13,6 @@ public class SessionMaster {
 	private ModelMaster modelMaster;
 	private TetrisBlock currentBlock;
 	private LinkedList<TetrisBlock> currentBlockQueue;
-	
-	public LinkedList<TetrisBlock> getCurrentBlockQueue() {
-		return currentBlockQueue;
-	}
-
-	public void setCurrentBlockQueue(LinkedList<TetrisBlock> currentBlockQueue) {
-		this.currentBlockQueue = currentBlockQueue;
-	}
 
 	public SessionMaster(HttpSession session, TetrisMaster tetrisMaster, ModelMaster modelMaster,
 			TetrisBlock currentBlock) {
@@ -62,5 +54,13 @@ public class SessionMaster {
 
 	public void setCurrentBlock(TetrisBlock currentBlock) {
 		this.currentBlock = currentBlock;
+	}
+	
+	public LinkedList<TetrisBlock> getCurrentBlockQueue() {
+		return currentBlockQueue;
+	}
+
+	public void setCurrentBlockQueue(LinkedList<TetrisBlock> currentBlockQueue) {
+		this.currentBlockQueue = currentBlockQueue;
 	}
 }

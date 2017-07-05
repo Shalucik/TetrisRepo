@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -34,10 +33,7 @@ public class SocketController {
 	private BlockRepository bRepo;
 	
 	@Autowired
-	private HighscoreRepository hRepo;
-	
-	@Autowired
-	SimpMessagingTemplate template;
+	private HighscoreRepository hRepo;	
 	
 	private HashMap<String, SessionMaster> sessionMap = new HashMap<String, SessionMaster>();
 
@@ -53,7 +49,7 @@ public class SocketController {
 
 	@MessageMapping("/controls")
 	@SendToUser
-	public synchronized Greeting controlgreeting(ControlMessage message, SimpMessageHeaderAccessor headerAccessor){		
+	public synchronized Greeting controlgreeting(@Payload ControlMessage message, SimpMessageHeaderAccessor headerAccessor){		
 		SessionMaster session = getSessionFromHeader(headerAccessor);
 		TetrisMaster tetrisMaster = session.getTetrisMaster();
 		TetrisBlock currentBlock = session.getCurrentBlock();
@@ -61,15 +57,15 @@ public class SocketController {
 		if(session.getCurrentBlock() == null)
 			return new MoveGreeting("no change");
 		switch(message.getKeyboardCode()){
-			case 32:
+			case 32: //Space
 				return tetrisMaster.dropBlock(currentBlock, session.getCurrentBlockQueue().getLast());
-			case 37:
-				return tetrisMaster.moveGreeting(new MoveMessage(-1,0), currentBlock, nextBlock);
-			case 38:
+			case 37: //Left Key
+				return moveBlock(new MoveMessage(-1,0), session);
+			case 38: //Up Key
 				return tetrisMaster.rotationGreeting(currentBlock, nextBlock);
-			case 39:				
+			case 39: //Right Key
 				return moveBlock(new MoveMessage(1,0), session);
-			case 40:				
+			case 40: //Down Key
 				return moveBlock(new MoveMessage(0,1), session);
 			default:
 				return new MoveGreeting("no change");
@@ -95,7 +91,7 @@ public class SocketController {
 		session.setCurrentBlock(null);
 		session.getCurrentBlockQueue().removeFirst();
 		session.getCurrentBlockQueue().addLast(session.getModelMaster().createBlock());;
-		session.getTetrisMaster().setScore(0l);
+		session.getTetrisMaster().setScore(0);
 		session.getTetrisMaster().setLevel(0);
 		return new ResetGreeting("Reset");
 	}
@@ -106,15 +102,15 @@ public class SocketController {
 		session.getModelMaster().addScore(hRepo, message.getName(), session.getTetrisMaster().getScore(), session.getTetrisMaster().getLevel());		
 	}
 	
-	private SessionMaster getSessionFromHeader(SimpMessageHeaderAccessor headerAccessor){
-		return sessionMap.get(headerAccessor.getSessionAttributes().get("sessionId").toString());
-	}
-	
 	@MessageMapping("highscore")
 	@SendToUser
 	public Greeting highscoreSocket(SimpMessageHeaderAccessor headerAccessor){
 		SessionMaster session = getSessionFromHeader(headerAccessor);		
 		return new HighscoreGreeting("highscores", session.getModelMaster().getScores(hRepo));
+	}
+	
+	private SessionMaster getSessionFromHeader(SimpMessageHeaderAccessor headerAccessor){
+		return sessionMap.get(headerAccessor.getSessionAttributes().get("sessionId").toString());
 	}
 	
 	public Greeting newBlock(MoveMessage message, SessionMaster session){		
@@ -126,7 +122,7 @@ public class SocketController {
 			if(tetrisMaster.checkGrid(point)){
 				tetrisMaster.resetGrid();
 				session.setCurrentBlock(null);
-				return new ResetGreeting("reset");
+				return new ResetGreeting("reached top of screen");
 			}
 		}
 		TetrisBlock nb = session.getCurrentBlockQueue().getLast();
@@ -147,9 +143,6 @@ public class SocketController {
 		return greeting;
 	}
 	
-	
-	
-
 	@RequestMapping("/test")
 	public @ResponseBody String makeDB() {
 		ModelMaster modelMaster = new ModelMaster(bRepo);

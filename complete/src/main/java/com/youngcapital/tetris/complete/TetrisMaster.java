@@ -10,11 +10,23 @@ import com.youngcapital.tetris.complete.websocket.MoveGreeting;
 import com.youngcapital.tetris.complete.websocket.MoveMessage;
 
 public class TetrisMaster {
+	
+	static Point[] addPointToArray(Point point, Point[] array) {
+		Point[] curPos = new Point[array.length];
+		for (int i = 0; i < curPos.length; i++) {
+			curPos[i] = addPointToPoint(point, array[i]);
+		}
+		return curPos;
+	}
+
+	static Point addPointToPoint(Point p, Point q) {
+		return new Point(p.x + q.x, p.y + q.y);
+	}
 
 	private int gridWidth;
 	private int gridHeight;
 	private boolean[][] grid;
-	private Long score = new Long(0);
+	private int score = 0;
 	private int level = 0;
 	private int linesThisLevel = 0;
 	private final int LINESPERLEVEL = 8;
@@ -27,6 +39,58 @@ public class TetrisMaster {
 
 	void resetGrid() {
 		grid = new boolean[gridHeight][gridWidth];
+	}
+	
+	ArrayList<Point> getFreePositions() {
+		ArrayList<Point> points = new ArrayList<Point>();
+		for (int y = 0; y < gridHeight; y++) {
+			for (int x = 0; x < gridWidth; x++) {
+				if (!checkGrid(x, y)) 
+						points.add(new Point(x, y));
+			}
+		}
+		
+		return points;
+	}
+	
+	Greeting moveGreeting(MoveMessage message, TetrisBlock currentBlock, TetrisBlock nextBlock) {
+		Point move = new Point(message.getX(), message.getY());
+
+		ArrayList<Point> emptyPositions = getFreePositions();
+		Point[] temp = currentBlock.getCurrentPositions();
+		for (Point p: temp) {
+			emptyPositions.add(p);
+		}
+		Point[] currentPositions = emptyPositions.toArray(new Point[0]);
+		Point[] newPositions = TetrisMaster.addPointToArray(move, currentBlock.getCurrentPositions());
+		for (int i = 0; i < newPositions.length; i++) {
+			if ((message.getX() != 0 && checkGrid(newPositions[i]))) {
+				return new MoveGreeting("can't move");
+			}
+			if (newPositions[i].y == grid.length || checkGrid(newPositions[i])) {
+				int[] lines = updateGrid(currentBlock.getCurrentPositions());
+				if (lines.length > 0) {
+					updateGridAfterLineRemoval(lines);
+					
+					score += updateScore(lines.length);
+					
+					linesThisLevel += lines.length;
+					
+					while (linesThisLevel >= LINESPERLEVEL) {
+						linesThisLevel -= LINESPERLEVEL;
+						level++;
+					}
+					
+					return new LineGreeting("clearLines", lines, score, level);
+				}
+
+				return null;
+			}
+		}
+
+		currentBlock.setCurrentPosition(TetrisMaster.addPointToPoint(currentBlock.getCurrentPosition(), move));
+		currentBlock.setCurrentPositions(newPositions);
+		return new MoveGreeting("continue", currentPositions, newPositions, currentBlock.getColor());
 	}
 
 	Greeting rotationGreeting(TetrisBlock currentBlock, TetrisBlock nextBlock) {
@@ -53,31 +117,33 @@ public class TetrisMaster {
 			currentBlock.setCurrentPositions(newPos);
 			return new MoveGreeting("rotating", curPos, newPos, currentBlock.getColor());
 		}
-		return new MoveGreeting("");
+		return new MoveGreeting("no block to rotate");
 	}
 	
-	ArrayList<Point> getFreePositions() {
-		ArrayList<Point> points = new ArrayList<Point>();
-		for (int y = 0; y < gridHeight; y++) {
-			for (int x = 0; x < gridWidth; x++) {
-				if (!checkGrid(x, y)) 
-						points.add(new Point(x, y));
+	Greeting dropBlock(TetrisBlock currentBlock, TetrisBlock nextBlock) {
+		if (currentBlock == null) {
+			return new MoveGreeting("no block to drop");
+		}
+		Point[] currentPositions = currentBlock.getCurrentPositions();
+		Point[] points = new Point[currentPositions.length];
+
+		for (int i = 0; i < points.length; i++) {
+			points[i] = new Point(currentPositions[i]);
+		}
+
+		for (int i = 0; i < points.length; i++) {
+			while (points[i].y < gridHeight && !checkGrid(points[i].x, points[i].y)) {
+				points[i].y++;
 			}
+			points[i].y -= (1 + currentPositions[i].y);
 		}
-		
-		return points;
-	}
 
-	static Point[] addPointToArray(Point point, Point[] array) {
-		Point[] curPos = new Point[array.length];
-		for (int i = 0; i < curPos.length; i++) {
-			curPos[i] = addPointToPoint(point, array[i]);
+		Point smallestDelta = points[0];
+		for (int i = 1; i < points.length; i++) {
+			smallestDelta = (points[i].y < smallestDelta.y ? points[i] : smallestDelta);
 		}
-		return curPos;
-	}
 
-	static Point addPointToPoint(Point p, Point q) {
-		return new Point(p.x + q.x, p.y + q.y);
+		return moveGreeting(new MoveMessage(0, smallestDelta.y), currentBlock, nextBlock);
 	}
 
 	int[] updateGrid(Point[] positions) {
@@ -150,72 +216,6 @@ public class TetrisMaster {
 		return true;
 	}
 
-	Greeting dropBlock(TetrisBlock currentBlock, TetrisBlock nextBlock) {
-		if (currentBlock == null) {
-			return new MoveGreeting("can't move");
-		}
-		Point[] currentPositions = currentBlock.getCurrentPositions();
-		Point[] points = new Point[currentPositions.length];
-
-		for (int i = 0; i < points.length; i++) {
-			points[i] = new Point(currentPositions[i].x, currentPositions[i].y);
-		}
-
-		for (int i = 0; i < points.length; i++) {
-			while (points[i].y < gridHeight && !checkGrid(points[i].x, points[i].y)) {
-				points[i].y++;
-			}
-			points[i].y -= (1 + currentPositions[i].y);
-		}
-
-		Point smallestDelta = points[0];
-		for (int i = 1; i < points.length; i++) {
-			smallestDelta = (points[i].y < smallestDelta.y ? points[i] : smallestDelta);
-		}
-
-		return moveGreeting(new MoveMessage(0, smallestDelta.y), currentBlock, nextBlock);
-	}
-
-	Greeting moveGreeting(MoveMessage message, TetrisBlock currentBlock, TetrisBlock nextBlock) {
-		Point move = new Point(message.getX(), message.getY());
-
-		ArrayList<Point> emptyPositions = getFreePositions();
-		Point[] temp = currentBlock.getCurrentPositions();
-		for (Point p: temp) {
-			emptyPositions.add(p);
-		}
-		Point[] currentPositions = emptyPositions.toArray(new Point[0]);
-		Point[] newPositions = TetrisMaster.addPointToArray(move, currentBlock.getCurrentPositions());
-		for (int i = 0; i < newPositions.length; i++) {
-			if ((message.getX() != 0 && checkGrid(newPositions[i]))) {
-				return new MoveGreeting("can't move");
-			}
-			if (newPositions[i].y == grid.length || checkGrid(newPositions[i])) {
-				int[] lines = updateGrid(currentBlock.getCurrentPositions());
-				if (lines.length > 0) {
-					updateGridAfterLineRemoval(lines);
-					
-					score += updateScore(lines.length);
-					
-					linesThisLevel += lines.length;
-					
-					if (linesThisLevel >= LINESPERLEVEL) {
-						linesThisLevel -= LINESPERLEVEL;
-						level++;
-					}
-					
-					return new LineGreeting("clearLines", lines, score, level);
-				}
-
-				return null;
-			}
-		}
-
-		currentBlock.setCurrentPosition(TetrisMaster.addPointToPoint(currentBlock.getCurrentPosition(), move));
-		currentBlock.setCurrentPositions(newPositions);
-		return new MoveGreeting("continue", currentPositions, newPositions, currentBlock.getColor());
-	}
-
 	private int updateScore(int lines) {
 		int scoreIncrease = 0;
 		switch (lines) {
@@ -235,11 +235,11 @@ public class TetrisMaster {
 		return scoreIncrease;
 	}
 
-	public Long getScore() {
+	public int getScore() {
 		return score;
 	}
 
-	public void setScore(Long score) {
+	public void setScore(int score) {
 		this.score = score;
 	}
 

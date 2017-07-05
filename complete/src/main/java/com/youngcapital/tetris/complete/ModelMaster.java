@@ -21,7 +21,7 @@ public class ModelMaster {
 	}
 
 	public TetrisBlock createBlock(){
-		Block block = getRandomBlock();
+		Block block = getRandomBlock();	
 		
 		Point curPos = getPoint(block.getCurrentPos());
 		
@@ -35,6 +35,30 @@ public class ModelMaster {
 		
 		return new TetrisBlock(curPos, oris, randomOrientation, TetrisMaster.addPointToArray(curPos, oris[randomOrientation]), block.getColor());
 	}
+	
+	public boolean addScore(HighscoreRepository hRepo, String name, int score, int level){
+		Highscore highScore = new Highscore();
+		highScore.setName(name);
+		highScore.setScore(score);
+		highScore.setLevel(level);
+		hRepo.save(highScore);
+		return true;
+	}
+	
+	public Highscore[] getScores(HighscoreRepository hRepo){
+		int count = (int) hRepo.count();
+		Highscore[] scores = new Highscore[count];
+		int i = 0;
+		Iterable<Highscore> highscores = hRepo.findAll(); 
+		for(Highscore score: highscores){
+			scores[i] = score;
+			i++;
+		}
+		
+		Arrays.sort(scores);
+		return scores;
+	}
+	
 	
 	public Point[] getOrientation(Orientation ori){
 		Point[] oris = new Point[4];
@@ -77,29 +101,6 @@ public class ModelMaster {
 		}
 		
 		return list == null ? null : list.get(0);
-	}
-	
-	public boolean addScore(HighscoreRepository hRepo, String name, Long score, int level){
-		Highscore highScore = new Highscore();
-		highScore.setName(name);
-		highScore.setScore(score);
-		highScore.setLevel(level);
-		hRepo.save(highScore);
-		return true;
-	}
-	
-	public Highscore[] getScores(HighscoreRepository hRepo){
-		int count = (int) hRepo.count();
-		Highscore[] scores = new Highscore[count];
-		int i = 0;
-		Iterable<Highscore> highscores = hRepo.findAll(); 
-		for(Highscore score: highscores){
-			scores[i] = score;
-			i++;
-		}
-		
-		Arrays.sort(scores);
-		return scores;
 	}
 	
 	public String makeDB() {
