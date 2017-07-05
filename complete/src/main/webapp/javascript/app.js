@@ -254,12 +254,6 @@ function keyInput(keycode) {
 }
 
 $(function() {
-	$("#connect").click(function() {
-		connect();
-	});
-	$("#disconnect").click(function() {
-		disconnect();
-	});
 	$(document).keydown(function(event) {
 		keyInput(event.which);
 	});

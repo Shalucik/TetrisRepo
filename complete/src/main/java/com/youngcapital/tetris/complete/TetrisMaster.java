@@ -186,7 +186,6 @@ public class TetrisMaster {
 		}
 		Point[] currentPositions = emptyPositions.toArray(new Point[0]);
 		Point[] newPositions = TetrisMaster.addPointToArray(move, currentBlock.getCurrentPositions());
-		System.out.println(newPositions.length);
 		for (int i = 0; i < newPositions.length; i++) {
 			if ((message.getX() != 0 && checkGrid(newPositions[i]))) {
 				return new MoveGreeting("can't move");
