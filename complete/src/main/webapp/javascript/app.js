@@ -215,6 +215,7 @@ function start() {
 	stompClient.send('/app/reset', {}, "");
 	$("#start").prop("disabled", true);
 	$("#stop").prop("disabled", false);
+	time=500;
 	
 	if(gameInterval) {
 		clearInterval(gameInterval);

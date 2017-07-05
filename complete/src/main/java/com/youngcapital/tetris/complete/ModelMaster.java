@@ -46,8 +46,7 @@ public class ModelMaster {
 	}
 	
 	public Highscore[] getScores(HighscoreRepository hRepo){
-		int count = (int) hRepo.count();
-		Highscore[] scores = new Highscore[count];
+		Highscore[] scores = new Highscore[(int) hRepo.count()];
 		int i = 0;
 		Iterable<Highscore> highscores = hRepo.findAll(); 
 		for(Highscore score: highscores){
